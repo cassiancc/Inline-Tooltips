@@ -1,0 +1,9 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:directory",
+      "prefix": "inline_tooltip_icons/",
+      "source": "inline_tooltip_icons"
+    }
+  ]
+}

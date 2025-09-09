@@ -9,8 +9,11 @@ import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class InlineTooltips implements ClientModInitializer {
 	public static final String MOD_ID = "inline_tooltips";
@@ -29,15 +32,17 @@ public class InlineTooltips implements ClientModInitializer {
                     itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
                         if (display != ItemAttributeModifiers.Display.hidden() && attributeModifier.amount() != 0) {
                             var player = Minecraft.getInstance().player;
-                            double amount = attributeModifier.amount();
+                            AtomicReference<Double> amount = new AtomicReference<>(attributeModifier.amount());
                             if (player != null) {
-                                amount = switch (attributeModifier.operation()) {
+                                amount.set(switch (attributeModifier.operation()) {
                                     case ADD_VALUE -> attributeModifier.amount() + player.getAttributeBaseValue(holder);
-                                    case ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL -> attributeModifier.amount() * player.getAttributeBaseValue(holder);
-                                };
+                                    case ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL ->
+                                            attributeModifier.amount() * player.getAttributeBaseValue(holder);
+                                });
                             }
+                            amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
                             var icon = holder.unwrapKey().orElseThrow().location();
-                            var iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, ResourceLocation.fromNamespaceAndPath(icon.getNamespace(), "inline_tooltip_icons/"+ icon.getPath()))).append(ModHelpers.format(amount) + " ");
+                            var iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, ResourceLocation.fromNamespaceAndPath(icon.getNamespace(), "inline_tooltip_icons/"+ icon.getPath()))).append(ModHelpers.format(amount.get()) + " ");
                             if (Minecraft.getInstance().hasAltDown() && tooltipFlag.isAdvanced()) {
                                 iconComponent.append(Component.literal(" (%s)".formatted(icon)));
                                 list.add(iconComponent);

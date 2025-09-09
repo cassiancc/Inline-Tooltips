@@ -38,18 +38,6 @@ public class AttributeTooltipsMixin {
         // Enable our tooltip
         if (Minecraft.getInstance().hasShiftDown() || attributeModifier.amount()==0) {
             original.call(instance, consumer, player, attributeHolder, attributeModifier);
-        } else {
-            double base = 0;
-            if (player != null) {
-                base+=player.getAttributeBaseValue(attributeHolder);
-            }
-            var icon = attributeHolder.unwrapKey().orElseThrow().location();
-
-            var component = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, ResourceLocation.fromNamespaceAndPath(icon.getNamespace(), "inline_tooltip_icons/"+ icon.getPath()))).append(ModHelpers.format(attributeModifier.amount() + base));
-            if (Minecraft.getInstance().hasAltDown()) {
-                component.append(Component.literal(" (%s)".formatted(icon)));
-            }
-            consumer.accept(component);
         }
     }
 

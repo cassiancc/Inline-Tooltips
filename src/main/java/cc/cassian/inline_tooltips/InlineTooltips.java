@@ -28,28 +28,30 @@ public class InlineTooltips implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ItemTooltipCallback.EVENT.register(((itemStack, tooltipContext, tooltipFlag, list) -> {
-            var component = Component.empty();
-            for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
-                itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
-                    if (display != ItemAttributeModifiers.Display.hidden()) {
-                        var player = Minecraft.getInstance().player;
-                        double base = 0;
-                        if (player != null) {
-                            base+=player.getAttributeBaseValue(holder);
+            if (!Minecraft.getInstance().hasShiftDown()) {
+                var component = Component.empty();
+                for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
+                    itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
+                        if (display != ItemAttributeModifiers.Display.hidden()) {
+                            var player = Minecraft.getInstance().player;
+                            double base = 0;
+                            if (player != null) {
+                                base+=player.getAttributeBaseValue(holder);
+                            }
+                            var icon = holder.unwrapKey().orElseThrow().location();
+                            var iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, ResourceLocation.fromNamespaceAndPath(icon.getNamespace(), "inline_tooltip_icons/"+ icon.getPath()))).append(ModHelpers.format(attributeModifier.amount() + base) + " ");
+                            if (Minecraft.getInstance().hasAltDown() && tooltipFlag.isAdvanced()) {
+                                iconComponent.append(Component.literal(" (%s)".formatted(icon)));
+                                list.add(iconComponent);
+                            } else {
+                                component.append(iconComponent);
+                            }
                         }
-                        var icon = holder.unwrapKey().orElseThrow().location();
-                        var iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, ResourceLocation.fromNamespaceAndPath(icon.getNamespace(), "inline_tooltip_icons/"+ icon.getPath()))).append(ModHelpers.format(attributeModifier.amount() + base) + " ");
-                        if (Minecraft.getInstance().hasAltDown() && tooltipFlag.isAdvanced()) {
-                            iconComponent.append(Component.literal(" (%s)".formatted(icon)));
-                            list.add(iconComponent);
-                        } else {
-                            component.append(iconComponent);
-                        }
-                    }
-                });
+                    });
+                }
+                if (!component.equals(Component.empty()))
+                    list.add(component);
             }
-            if (!component.equals(Component.empty()))
-                list.add(component);
         }));
     }
 }

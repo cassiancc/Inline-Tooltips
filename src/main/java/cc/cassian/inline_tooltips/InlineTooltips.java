@@ -1,19 +1,14 @@
 package cc.cassian.inline_tooltips;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,14 +27,17 @@ public class InlineTooltips implements ClientModInitializer {
                 var component = Component.empty();
                 for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
                     itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
-                        if (display != ItemAttributeModifiers.Display.hidden()) {
+                        if (display != ItemAttributeModifiers.Display.hidden() && attributeModifier.amount() != 0) {
                             var player = Minecraft.getInstance().player;
-                            double base = 0;
+                            double amount = attributeModifier.amount();
                             if (player != null) {
-                                base+=player.getAttributeBaseValue(holder);
+                                amount = switch (attributeModifier.operation()) {
+                                    case ADD_VALUE -> attributeModifier.amount() + player.getAttributeBaseValue(holder);
+                                    case ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL -> attributeModifier.amount() * player.getAttributeBaseValue(holder);
+                                };
                             }
                             var icon = holder.unwrapKey().orElseThrow().location();
-                            var iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, ResourceLocation.fromNamespaceAndPath(icon.getNamespace(), "inline_tooltip_icons/"+ icon.getPath()))).append(ModHelpers.format(attributeModifier.amount() + base) + " ");
+                            var iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, ResourceLocation.fromNamespaceAndPath(icon.getNamespace(), "inline_tooltip_icons/"+ icon.getPath()))).append(ModHelpers.format(amount) + " ");
                             if (Minecraft.getInstance().hasAltDown() && tooltipFlag.isAdvanced()) {
                                 iconComponent.append(Component.literal(" (%s)".formatted(icon)));
                                 list.add(iconComponent);

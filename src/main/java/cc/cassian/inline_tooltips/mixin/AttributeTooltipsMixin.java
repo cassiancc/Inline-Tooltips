@@ -36,7 +36,7 @@ public class AttributeTooltipsMixin {
     @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/component/ItemAttributeModifiers$Display;apply(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/Holder;Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;)V"), method = "method_57370")
     private static void init(ItemAttributeModifiers.Display instance, Consumer<Component> consumer, @Nullable Player player, Holder<Attribute> attributeHolder, AttributeModifier attributeModifier, Operation<Void> original) {
         // Enable our tooltip
-        if (Minecraft.getInstance().hasShiftDown() || attributeModifier.amount()==0) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             original.call(instance, consumer, player, attributeHolder, attributeModifier);
         }
     }

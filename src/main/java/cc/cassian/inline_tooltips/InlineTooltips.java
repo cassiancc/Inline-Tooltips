@@ -4,7 +4,9 @@ import net.fabricmc.api.ClientModInitializer;
 
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.BeehiveBlock;
+import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +82,18 @@ public class InlineTooltips implements ClientModInitializer {
                 // Add icon
                 if (!component.equals(Component.empty()))
                     list.add(component);
+            }
+            if (CONFIG.lodestoneTooltip && itemStack.has(DataComponents.LODESTONE_TRACKER)) {
+                var state = itemStack.get(DataComponents.LODESTONE_TRACKER);
+                if (state == null || state.target().isEmpty()) return;
+                GlobalPos globalPos = state.target().get();
+                var pos = globalPos.pos();
+                list.add(
+                        Component.translatable("gui.inline_tooltips.target").withStyle(ChatFormatting.GRAY).append(
+                        Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.GOLD)));
+                list.add(
+                        Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
+                        Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withStyle(ChatFormatting.GOLD)));
             }
         }));
     }

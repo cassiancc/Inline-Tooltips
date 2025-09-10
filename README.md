@@ -28,4 +28,8 @@ Inline Tooltips is a clientside mod for Fabric 1.21.9. Its dependencies are list
 Inline Tooltips is available under the open source MIT License. Note that this means you are required to attribute the mod if you use any content from it in your own projects.
 
 ## Credits
-Features sprites from noelledotjpg. Code for detecting and correcting for Sharpness was based on [Sharper Tooltips](https://modrinth.com/mod/sharper-tooltips) under its [MIT License](https://github.com/sylenthuntress/SharperTooltips/blob/master/LICENSE).
+Features sprites from noelledotjpg. 
+
+Code for detecting and correcting for Sharpness was based on [Sharper Tooltips](https://modrinth.com/mod/sharper-tooltips) under its [MIT License](https://github.com/sylenthuntress/SharperTooltips/blob/master/LICENSE).
+ 
+This mod's concept was inspired by [Inspecio](https://modrinth.com/mod/inspecio) and [Tooltip Icons](https://modrinth.com/mod/tooltip-icons). Give them a try if they suit your needs better!

@@ -12,4 +12,6 @@ public class ModConfig extends WrappedConfig {
     public boolean attributeTooltips = true;
     @Comment("Add tooltips based on amount of honey.")
     public boolean honeyTooltip = true;
+    @Comment("Add tooltips based on Lodestone Compass's destination.")
+    public boolean lodestoneTooltip = true;
 }

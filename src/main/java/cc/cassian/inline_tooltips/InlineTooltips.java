@@ -3,6 +3,7 @@ package cc.cassian.inline_tooltips;
 import net.fabricmc.api.ClientModInitializer;
 
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -23,6 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class InlineTooltips implements ClientModInitializer {
 	public static final String MOD_ID = "inline_tooltips";
+    public static final ModConfig CONFIG = ModConfig.createToml(FabricLoader.getInstance().getConfigDir(),"", MOD_ID, ModConfig.class);
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -35,30 +37,39 @@ public class InlineTooltips implements ClientModInitializer {
             if (!Minecraft.getInstance().hasShiftDown()) {
                 var component = Component.empty();
                 // Attribute Modifiers
-                for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
-                    itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
-                        if (display != ItemAttributeModifiers.Display.hidden() && attributeModifier.amount() != 0) {
-                            var player = Minecraft.getInstance().player;
-                            AtomicReference<Double> amount = new AtomicReference<>(attributeModifier.amount());
-                            if (player != null) {
-                                amount.set(switch (attributeModifier.operation()) {
-                                    case ADD_VALUE -> attributeModifier.amount() + player.getAttributeBaseValue(holder);
-                                    case ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL ->
-                                            attributeModifier.amount() * player.getAttributeBaseValue(holder);
-                                });
+                if (CONFIG.attributeTooltips) {
+                    for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
+                        itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
+                            if (display != ItemAttributeModifiers.Display.hidden() && attributeModifier.amount() != 0) {
+                                var player = Minecraft.getInstance().player;
+                                AtomicReference<Double> amount = new AtomicReference<>(attributeModifier.amount());
+                                if (player != null) {
+                                    amount.set(switch (attributeModifier.operation()) {
+                                        case ADD_VALUE -> attributeModifier.amount() + player.getAttributeBaseValue(holder);
+                                        case ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL ->
+                                                attributeModifier.amount() * player.getAttributeBaseValue(holder);
+                                    });
+                                }
+                                amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
+                                var icon = holder.unwrapKey().orElseThrow().location();
+                                addIcon(icon, amount.get(), tooltipFlag, list, component);
                             }
-                            amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
-                            var icon = holder.unwrapKey().orElseThrow().location();
-                            addIcon(icon, amount.get(), tooltipFlag, list, component);
-                        }
-                    });
+                        });
+                    }
                 }
-                if (itemStack.has(DataComponents.BEES)) {
+                if (itemStack.has(DataComponents.BEES) && CONFIG.beesTooltip) {
                     var bees = itemStack.get(DataComponents.BEES);
                     if (bees == null) return;
                     addIcon(ResourceLocation.withDefaultNamespace("bees"), bees.bees().size(), tooltipFlag, list, component);
+
                 }
-                if (itemStack.has(DataComponents.BLOCK_STATE)) {
+                if (CONFIG.fuelTooltip) {
+                    var level = Minecraft.getInstance().level;
+                    if (level != null && level.fuelValues().isFuel(itemStack)) {
+                        addIcon(ResourceLocation.withDefaultNamespace("fuel"), level.fuelValues().burnDuration(itemStack) /200f, tooltipFlag, list, component);
+                    }
+                }
+                if (CONFIG.honeyTooltip && itemStack.has(DataComponents.BLOCK_STATE)) {
                     var state = itemStack.get(DataComponents.BLOCK_STATE);
                     if (state == null) return;
                     var honey = state.get(BeehiveBlock.HONEY_LEVEL);

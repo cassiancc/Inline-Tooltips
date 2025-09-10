@@ -15,13 +15,15 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.function.Consumer;
 
+import static cc.cassian.inline_tooltips.InlineTooltips.CONFIG;
+
 
 @Mixin(Bees.class)
 public class HideBeesMixin {
     @WrapOperation(at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"), method = "addToTooltip")
     private static <T> void init(Consumer instance, T t, Operation<Void> original) {
         // Disable default tooltip
-        if (Minecraft.getInstance().hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown() || !CONFIG.beesTooltip) {
             original.call(instance, t);
         }
     }

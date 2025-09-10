@@ -18,13 +18,15 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.function.Consumer;
 
+import static cc.cassian.inline_tooltips.InlineTooltips.CONFIG;
+
 
 @Mixin(ItemStack.class)
 public class HideAttributesMixin {
 	@WrapOperation(at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;isTrue()Z"), method = "method_57370")
 	private static boolean init(MutableBoolean instance, Operation<Boolean> original, @Local Consumer<Component> consumer, @Local AttributeModifier attributeModifier) {
         // Disable default tooltip
-        if (Minecraft.getInstance().hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown() || !CONFIG.attributeTooltips) {
             return original.call(instance);
         }
         return false;
@@ -33,7 +35,7 @@ public class HideAttributesMixin {
     @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/component/ItemAttributeModifiers$Display;apply(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/Holder;Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;)V"), method = "method_57370")
     private static void init(ItemAttributeModifiers.Display instance, Consumer<Component> consumer, @Nullable Player player, Holder<Attribute> attributeHolder, AttributeModifier attributeModifier, Operation<Void> original) {
         // Enable our tooltip
-        if (Minecraft.getInstance().hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown() || !CONFIG.attributeTooltips) {
             original.call(instance, consumer, player, attributeHolder, attributeModifier);
         }
     }

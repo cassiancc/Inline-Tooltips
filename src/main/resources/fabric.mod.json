@@ -3,13 +3,14 @@
 	"id": "inline_tooltips",
 	"version": "${version}",
 	"name": "Inline Tooltips",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "This mod adds improved tooltips for attributes, components, fuel, and more.",
 	"authors": [
 		"cassiancc"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://modrinth.com/mod/inline-tooltips",
+		"sources": "https://github.com/cassiancc/Inline-Tooltips",
+        "issues": "https://github.com/cassiancc/Inline-Tooltips/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/inline_tooltips/icon.png",

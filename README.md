@@ -2,7 +2,7 @@
 
 <a href='https://modrinth.com/mod/inline-tooltips/versions?l=fabric'><img alt="fabric" height="56" src="https://raw.githubusercontent.com/intergrav/devins-badges/refs/heads/v3/assets/cozy/supported/fabric_vector.svg"></a>
 
-This mod adds icons to the tooltips of your items.
+This mod replaces some basic tooltips with condensed tooltip icons. These tooltips are all inline and have icons, hence the name. Holding Shift restores the original tooltip
 
 ## Installation
 
@@ -11,9 +11,16 @@ Inline Tooltips is a clientside mod for Fabric 1.21.9. Its dependencies are list
 #### Dependencies
 - Fabric API is required.
 
-## Features
+## Supported Tooltips
 
-- Items with attribute modifiers like tools and armour now have a condensed tooltip with icons in place of attribute names. When the shift key is held, the original tooltip is restored.
+- Attack Damage
+- Attack Speed
+- Armor
+- Armor Toughness
+- Knockback Resistant
+- Bees
+- Honey
+- Fuel
 
 ## License
 [![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](https://github.com/cassiancc/Always-a-Bigger-Fish/blob/main/LICENSE.txt)

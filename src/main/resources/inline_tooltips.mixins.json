@@ -1,14 +1,16 @@
 {
-	"required": true,
-	"package": "cc.cassian.inline_tooltips.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-      "AttributeTooltipsMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"overwrites": {
-		"requireAnnotations": true
+  "required": true,
+  "package": "cc.cassian.inline_tooltips.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "HideAttributesMixin",
+    "HideBeesMixin",
+    "HideHoneyMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
 	}
 }

@@ -53,11 +53,17 @@ public class InlineTooltips implements ClientModInitializer {
                         }
                     });
                 }
-                if (itemStack.has(DataComponents.BEES) && itemStack.get(DataComponents.BEES) != null) {
-                    addIcon(ResourceLocation.withDefaultNamespace("bees"), itemStack.get(DataComponents.BEES).bees().size(), tooltipFlag, list, component);
+                if (itemStack.has(DataComponents.BEES)) {
+                    var bees = itemStack.get(DataComponents.BEES);
+                    if (bees == null) return;
+                    addIcon(ResourceLocation.withDefaultNamespace("bees"), bees.bees().size(), tooltipFlag, list, component);
                 }
-                if (itemStack.has(DataComponents.BLOCK_STATE) && itemStack.get(DataComponents.BLOCK_STATE) != null) {
-                    addIcon(ResourceLocation.withDefaultNamespace("honey"), itemStack.get(DataComponents.BLOCK_STATE).get(BeehiveBlock.HONEY_LEVEL), tooltipFlag, list, component);
+                if (itemStack.has(DataComponents.BLOCK_STATE)) {
+                    var state = itemStack.get(DataComponents.BLOCK_STATE);
+                    if (state == null) return;
+                    var honey = state.get(BeehiveBlock.HONEY_LEVEL);
+                    if (honey == null) return;
+                    addIcon(ResourceLocation.withDefaultNamespace("honey"), honey, tooltipFlag, list, component);
                 }
                 // Add icon
                 if (!component.equals(Component.empty()))

@@ -5,7 +5,8 @@
 	"name": "Inline Tooltips",
 	"description": "This mod adds improved tooltips for attributes, components, fuel, and more.",
 	"authors": [
-		"cassiancc"
+		"cassiancc",
+        "ProbablyEkho"
 	],
 	"contact": {
 		"homepage": "https://modrinth.com/mod/inline-tooltips",
@@ -25,7 +26,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.17.2",
-		"minecraft": "~1.21.8",
+		"minecraft": ">1.21.8",
 		"java": ">=21",
 		"fabric-api": "*"
 	},

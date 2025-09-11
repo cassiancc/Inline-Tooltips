@@ -43,7 +43,7 @@ public class InlineTooltips implements ClientModInitializer {
                 if (CONFIG.attributeTooltips) {
                     for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
                         itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
-                            if (display != ItemAttributeModifiers.Display.hidden() && attributeModifier.amount() != 0) {
+                            if (display != ItemAttributeModifiers.Display.hidden()) {
                                 var player = Minecraft.getInstance().player;
                                 AtomicReference<Double> amount = new AtomicReference<>(attributeModifier.amount());
                                 if (player != null) {
@@ -55,7 +55,8 @@ public class InlineTooltips implements ClientModInitializer {
                                 }
                                 amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
                                 var icon = holder.unwrapKey().orElseThrow().location();
-                                addIcon(icon, amount.get(), tooltipFlag, list, component);
+                                if (amount.get()!=0)
+                                    addIcon(icon, amount.get(), tooltipFlag, list, component);
                             }
                         });
                     }

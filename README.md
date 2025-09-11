@@ -17,7 +17,7 @@ Inline Tooltips is a clientside mod for Fabric 1.21.9. Its dependencies are list
 - Attack Speed
 - Armor
 - Armor Toughness
-- Knockback Resistant
+- Knockback Resistance
 - Bees
 - Honey
 - Fuel

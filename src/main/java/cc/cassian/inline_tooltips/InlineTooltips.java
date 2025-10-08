@@ -101,7 +101,7 @@ public class InlineTooltips implements ClientModInitializer {
 
     private void addIcon(ResourceLocation icon, double amount, TooltipFlag tooltipFlag, List<Component> list, MutableComponent component) {
         var iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, ResourceLocation.fromNamespaceAndPath(icon.getNamespace(), "inline_tooltip_icons/"+ icon.getPath()))).append(ModHelpers.format(amount) + " ");
-        if (Minecraft.getInstance().hasAltDown() && tooltipFlag.isAdvanced()) {
+        if (Minecraft.getInstance().hasAltDown() && InlineTooltips.CONFIG.debugInfo) {
             iconComponent.append(Component.literal(" (%s)".formatted(icon)));
             list.add(iconComponent);
         } else {

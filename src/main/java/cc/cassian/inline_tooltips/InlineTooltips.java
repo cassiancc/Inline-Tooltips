@@ -101,6 +101,9 @@ public class InlineTooltips implements ClientModInitializer {
                         Component.translatable("gui.inline_tooltips.position").withStyle(ChatFormatting.GRAY).append(
                                 Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.GOLD)));
             }
+            if (CONFIG.textTooltips.durabilityTooltip && !tooltipFlag.isAdvanced() && itemStack.isDamaged() && itemStack.has(DataComponents.DAMAGE)) {
+                list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ChatFormatting.GRAY));
+            }
         }));
     }
 

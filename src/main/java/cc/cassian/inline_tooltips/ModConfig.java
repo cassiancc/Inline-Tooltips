@@ -23,6 +23,8 @@ public class ModConfig extends WrappedConfig {
         public boolean compassTooltip = true;
         @Comment("Add tooltips based on Lodestone Compass's destination.")
         public boolean lodestoneTooltip = true;
+        @Comment("Add tooltips based on durability.")
+        public boolean durabilityTooltip = true;
     }
 
     public DeveloperOptions developerOptions = new DeveloperOptions();

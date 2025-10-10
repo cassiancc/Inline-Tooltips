@@ -1,4 +1,5 @@
 {
   "gui.inline_tooltips.target": "Target: ",
-  "gui.inline_tooltips.dimension": "Dimension: "
+  "gui.inline_tooltips.dimension": "Dimension: ",
+  "gui.inline_tooltips.position": "Position: "
 }

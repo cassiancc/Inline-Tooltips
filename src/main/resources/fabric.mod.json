@@ -5,9 +5,12 @@
 	"name": "Inline Tooltips",
 	"description": "This mod adds improved tooltips for attributes, components, fuel, and more.",
 	"authors": [
-		"cassiancc",
-        "ProbablyEkho"
+		"cassiancc"
 	],
+    "contributors": [
+      "ProbablyEkho",
+      "noelledotjpg"
+    ],
 	"contact": {
 		"homepage": "https://modrinth.com/mod/inline-tooltips",
 		"sources": "https://github.com/cassiancc/Inline-Tooltips",

@@ -7,16 +7,15 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.BeehiveBlock;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ public class InlineTooltips implements ClientModInitializer {
             if (!Minecraft.getInstance().hasShiftDown()) {
                 var component = Component.empty();
                 // Attribute Modifiers
-                if (CONFIG.attributeTooltips) {
+                if (CONFIG.iconTooltips.attributeTooltips) {
                     for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
                         itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
                             if (display != ItemAttributeModifiers.Display.hidden()) {
@@ -61,19 +60,19 @@ public class InlineTooltips implements ClientModInitializer {
                         });
                     }
                 }
-                if (itemStack.has(DataComponents.BEES) && CONFIG.beesTooltip) {
+                if (itemStack.has(DataComponents.BEES) && CONFIG.iconTooltips.beesTooltip) {
                     var bees = itemStack.get(DataComponents.BEES);
                     if (bees == null) return;
                     addIcon(ResourceLocation.withDefaultNamespace("bees"), bees.bees().size(), tooltipFlag, list, component);
 
                 }
-                if (CONFIG.fuelTooltip) {
+                if (CONFIG.iconTooltips.fuelTooltip) {
                     var level = Minecraft.getInstance().level;
                     if (level != null && level.fuelValues().isFuel(itemStack)) {
                         addIcon(ResourceLocation.withDefaultNamespace("fuel"), level.fuelValues().burnDuration(itemStack) /200f, tooltipFlag, list, component);
                     }
                 }
-                if (CONFIG.honeyTooltip && itemStack.has(DataComponents.BLOCK_STATE)) {
+                if (CONFIG.iconTooltips.honeyTooltip && itemStack.has(DataComponents.BLOCK_STATE)) {
                     var state = itemStack.get(DataComponents.BLOCK_STATE);
                     if (state == null) return;
                     var honey = state.get(BeehiveBlock.HONEY_LEVEL);
@@ -84,7 +83,7 @@ public class InlineTooltips implements ClientModInitializer {
                 if (!component.equals(Component.empty()))
                     list.add(component);
             }
-            if (CONFIG.lodestoneTooltip && itemStack.has(DataComponents.LODESTONE_TRACKER)) {
+            if (CONFIG.textTooltips.lodestoneTooltip && itemStack.has(DataComponents.LODESTONE_TRACKER)) {
                 var state = itemStack.get(DataComponents.LODESTONE_TRACKER);
                 if (state == null || state.target().isEmpty()) return;
                 GlobalPos globalPos = state.target().get();
@@ -96,12 +95,18 @@ public class InlineTooltips implements ClientModInitializer {
                         Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
                         Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withStyle(ChatFormatting.GOLD)));
             }
+            if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !itemStack.has(DataComponents.LODESTONE_TRACKER)) {
+                var pos = Minecraft.getInstance().player.blockPosition();
+                list.add(
+                        Component.translatable("gui.inline_tooltips.position").withStyle(ChatFormatting.GRAY).append(
+                                Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.GOLD)));
+            }
         }));
     }
 
     private void addIcon(ResourceLocation icon, double amount, TooltipFlag tooltipFlag, List<Component> list, MutableComponent component) {
         var iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, ResourceLocation.fromNamespaceAndPath(icon.getNamespace(), "inline_tooltip_icons/"+ icon.getPath()))).append(ModHelpers.format(amount) + " ");
-        if (Minecraft.getInstance().hasAltDown() && InlineTooltips.CONFIG.debugInfo) {
+        if (Minecraft.getInstance().hasAltDown() && InlineTooltips.CONFIG.developerOptions.debugInfo) {
             iconComponent.append(Component.literal(" (%s)".formatted(icon)));
             list.add(iconComponent);
         } else {

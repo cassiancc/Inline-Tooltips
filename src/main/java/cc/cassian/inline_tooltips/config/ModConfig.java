@@ -1,4 +1,4 @@
-package cc.cassian.inline_tooltips;
+package cc.cassian.inline_tooltips.config;
 
 import folk.sisby.kaleido.api.WrappedConfig;
 import folk.sisby.kaleido.lib.quiltconfig.api.annotations.Comment;

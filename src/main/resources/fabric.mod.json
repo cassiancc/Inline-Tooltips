@@ -3,7 +3,7 @@
 	"id": "inline_tooltips",
 	"version": "${version}",
 	"name": "Inline Tooltips",
-	"description": "This mod adds improved tooltips for attributes, components, fuel, and more.",
+	"description": "This mod adds improved tooltips for compasses, attributes, components, fuel, and more.",
 	"authors": [
 		"cassiancc"
 	],
@@ -21,7 +21,7 @@
 	"environment": "client",
 	"entrypoints": {
 		"client": [
-			"cc.cassian.inline_tooltips.InlineTooltips"
+			"cc.cassian.inline_tooltips.fabric.FabricClientEntrypoint"
 		]
 	},
 	"mixins": [

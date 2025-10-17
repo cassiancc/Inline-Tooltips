@@ -5,7 +5,8 @@
   "mixins": [
     "HideAttributesMixin",
     "HideBeesMixin",
-    "HideHoneyMixin"
+    "HideHoneyMixin",
+    "NeoForgeHideAttributesMixin"
   ],
   "injectors": {
     "defaultRequire": 1

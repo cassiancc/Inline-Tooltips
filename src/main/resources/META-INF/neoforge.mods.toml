@@ -1,0 +1,29 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/cassiancc/Inline-Tooltips/issues"
+modURL="https://modrinth.com/project/inline-tooltips"
+
+[[mods]]
+modId = "inline_tooltips"
+displayName = "Inline Tooltips"
+version = "${version}"
+displayURL="https://modrinth.com/project/inline-tooltips"
+logoFile = "assets/inline_tooltips/icon.png"
+authors = "cassiancc"
+description = '''This mod adds improved tooltips for compasses, attributes, components, fuel, and more.'''
+
+[[mixins]]
+config = "inline_tooltips.mixins.json"
+
+[[dependencies.inline_tooltips]]
+modId = "neoforge"
+type = "required"
+versionRange = "[1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.inline_tooltips]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.9,)"

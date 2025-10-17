@@ -11,7 +11,7 @@ version = "${version}"
 displayURL="https://modrinth.com/project/inline-tooltips"
 logoFile = "assets/inline_tooltips/icon.png"
 authors = "cassiancc"
-description = '''This mod adds improved tooltips for compasses, attributes, components, fuel, and more.'''
+description = '''This mod adds styled tooltips for durability, attributes, components, fuel, and more.'''
 
 [[mixins]]
 config = "inline_tooltips.mixins.json"
@@ -26,4 +26,4 @@ side = "BOTH"
 [[dependencies.inline_tooltips]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.9,)"
+versionRange = "${minecraft}"

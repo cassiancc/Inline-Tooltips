@@ -3,12 +3,20 @@ package cc.cassian.inline_tooltips;
 import cc.cassian.inline_tooltips.config.ModConfig;
 import cc.cassian.inline_tooltips.helpers.ModHelpers;
 import cc.cassian.inline_tooltips.helpers.SharpnessHelpers;
+//? if =1.21.1 {
+/*import com.samsthenerd.inline.api.InlineAPI;
+import com.samsthenerd.inline.api.InlineData;
+import com.samsthenerd.inline.api.data.SpriteInlineData;
+import com.samsthenerd.inline.impl.InlineStyle;
+import com.samsthenerd.inline.utils.TextureSprite;
+*///?}
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+//? if >1.21.8
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -17,7 +25,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.BeehiveBlock;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +46,17 @@ public class InlineTooltips {
 
 
     public static void addTooltips(ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag, List<Component> list) {
-        if (!Minecraft.getInstance().hasShiftDown()) {
+        if (!ModHelpers.hasShiftDown()) {
             var component = Component.empty();
             // Attribute Modifiers
             if (CONFIG.iconTooltips.attributeTooltips) {
                 for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
+                    //? if >1.21.8 {
                     itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
+                        //?} else {
+                    /*itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier) -> {
+                        *///?}
+                        //? if >1.21.8
                         if (display != ItemAttributeModifiers.Display.hidden()) {
                             var player = Minecraft.getInstance().player;
                             AtomicReference<Double> amount = new AtomicReference<>(attributeModifier.amount());
@@ -56,6 +71,7 @@ public class InlineTooltips {
                             var icon = holder.unwrapKey().orElseThrow().location();
                             if (amount.get()!=0)
                                 addIcon(icon, amount.get(), tooltipFlag, list, component);
+                        //? if >1.21.8
                         }
                     });
                 }
@@ -63,13 +79,28 @@ public class InlineTooltips {
             if (itemStack.has(DataComponents.BEES) && CONFIG.iconTooltips.beesTooltip) {
                 var bees = itemStack.get(DataComponents.BEES);
                 if (bees == null) return;
-                addIcon(ResourceLocation.withDefaultNamespace("bees"), bees.bees().size(), tooltipFlag, list, component);
+                addIcon(ResourceLocation.withDefaultNamespace("bees"), bees
+                        //? if >1.21.8
+                        .bees()
+                        .size(), tooltipFlag, list, component);
 
             }
             if (CONFIG.iconTooltips.fuelTooltip) {
                 var level = Minecraft.getInstance().level;
-                if (level != null && level.fuelValues().isFuel(itemStack)) {
-                    addIcon(ResourceLocation.withDefaultNamespace("fuel"), level.fuelValues().burnDuration(itemStack) /200f, tooltipFlag, list, component);
+                if (level != null &&
+                        //? if >1.21.8 {
+                        level.fuelValues()
+                        //?} else {
+                        /*AbstractFurnaceBlockEntity
+                        *///?}
+                                .isFuel(itemStack)) {
+                    addIcon(ResourceLocation.withDefaultNamespace("fuel"),
+                            //? if >1.21.8 {
+                            level.fuelValues().burnDuration(itemStack)
+                             //?} else {
+                            /*AbstractFurnaceBlockEntity.getFuel().get(itemStack.getItem())
+                            *///?}
+                             /200f, tooltipFlag, list, component);
                 }
             }
             if (CONFIG.iconTooltips.honeyTooltip && itemStack.has(DataComponents.BLOCK_STATE)) {
@@ -106,10 +137,18 @@ public class InlineTooltips {
         }
     }
 
-    private static void addIcon(ResourceLocation icon, double amount, TooltipFlag tooltipFlag, List<Component> list, MutableComponent component) {
-        var iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, ResourceLocation.fromNamespaceAndPath(icon.getNamespace(), "inline_tooltip_icons/"+ icon.getPath()))).append(ModHelpers.format(amount) + " ");
-        if (Minecraft.getInstance().hasAltDown() && InlineTooltips.CONFIG.developerOptions.debugInfo) {
-            iconComponent.append(Component.literal(" (%s)".formatted(icon)));
+    private static void addIcon(ResourceLocation attribute, double amount, TooltipFlag tooltipFlag, List<Component> list, MutableComponent component) {
+        //? if >1.21.8 {
+        ResourceLocation icon = ResourceLocation.fromNamespaceAndPath(attribute.getNamespace(), "inline_tooltip_icons/"+ attribute.getPath());
+        MutableComponent iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, icon));
+        //?} else {
+        /*ResourceLocation icon = ResourceLocation.fromNamespaceAndPath(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "")));
+        var style = InlineStyle.fromInlineData(new SpriteInlineData(new TextureSprite(icon)));;
+        MutableComponent iconComponent = Component.literal(".").setStyle(style);
+        *///?}
+        iconComponent.append(ModHelpers.format(amount) + " ");
+        if (ModHelpers.hasAltDown() && InlineTooltips.CONFIG.developerOptions.debugInfo) {
+            iconComponent.append(Component.literal(" (%s)".formatted(attribute)));
             list.add(iconComponent);
         } else {
             component.append(iconComponent);
@@ -118,5 +157,9 @@ public class InlineTooltips {
 
     public static void init() {
 
+    }
+
+    public static ResourceLocation id(String id) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, id);
     }
 }

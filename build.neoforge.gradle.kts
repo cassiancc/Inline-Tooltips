@@ -9,7 +9,7 @@ tasks.named<ProcessResources>("processResources") {
 
     val props = HashMap<String, String>().apply {
         this["version"] = prop("mod.version")
-        this["minecraft"] = prop("deps.minecraft")
+        this["minecraft"] = prop("mod.mc_dep_forgelike")
     }
 
     filesMatching(listOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/mods.toml")) {
@@ -51,7 +51,6 @@ neoForge {
             sourceSet(sourceSets["main"])
         }
     }
-    sourceSets["main"].resources.srcDir("src/main/generated")
 }
 
 
@@ -68,6 +67,13 @@ repositories {
     maven ( "https://api.modrinth.com/maven") {
         name = "Modrinth"
     }
+    maven ( "https://maven.shedaniel.me/" ) {
+        name = "shedaniel (Cloth Config)"
+    }
+    maven {
+        name = "Kotlin for Forge"
+        setUrl("https://thedarkcolour.github.io/KotlinForForge/")
+    }
 }
 
 dependencies {
@@ -83,6 +89,17 @@ dependencies {
 
     // mcqoy
     implementation("maven.modrinth:mcqoy:yHGo6VsD")
+
+    // Cloth Config
+    if (hasProperty("deps.cloth_config")) {
+        implementation("me.shedaniel.cloth:cloth-config-neoforge:${property("deps.cloth_config")}")
+    } else {
+        compileOnly("me.shedaniel.cloth:cloth-config-neoforge:19.0.147")
+    }
+
+    if (hasProperty("deps.inline")) {
+        implementation("maven.modrinth:inline:${property("deps.inline")}")
+    }
 
 }
 
@@ -128,7 +145,7 @@ publishMods {
     type = BETA
     displayName = "${property("mod.name")} ${property("mod.version")} for ${stonecutter.current.version} Neoforge"
     version = "${property("mod.version")}+${property("deps.minecraft")}-neoforge"
-    changelog = provider { rootProject.file("CHANGELOG.md").readText() }
+    changelog = provider { rootProject.file("CHANGELOG-LATEST.md").readText() }
     modLoaders.add("neoforge")
 
     modrinth {
@@ -136,6 +153,9 @@ publishMods {
         accessToken = env.MODRINTH_API_KEY.orNull()
         minecraftVersions.add(stonecutter.current.version)
         minecraftVersions.addAll(additionalVersions)
+        if (hasProperty("deps.inline")) {
+            requires("inline")
+        }
     }
 
     curseforge {

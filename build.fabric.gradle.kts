@@ -11,7 +11,7 @@ tasks.named<ProcessResources>("processResources") {
 
     val props = HashMap<String, String>().apply {
         this["version"] = prop("mod.version")
-        this["minecraft"] = prop("deps.minecraft")
+        this["minecraft"] = prop("mod.mc_dep_fabric")
     }
 
     filesMatching(listOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/mods.toml")) {
@@ -48,6 +48,9 @@ repositories {
     maven ( "https://maven.terraformersmc.com/releases/" ) {
         name = "Terraformers (Mod Menu)"
     }
+    maven ( "https://maven.shedaniel.me/" ) {
+        name = "shedaniel (Cloth Config)"
+    }
 }
 
 dependencies {
@@ -61,8 +64,8 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric-api")}")
 
     // Mod Menu
-    if (hasProperty("deps.modmenu_version"))
-        modApi("com.terraformersmc:modmenu:${property("deps.modmenu_version")}")
+    if (hasProperty("deps.modmenu"))
+        modApi("com.terraformersmc:modmenu:${property("deps.modmenu")}")
     else {
         modCompileOnly("com.terraformersmc:modmenu:15.0.0-beta.3")
     }
@@ -74,6 +77,17 @@ dependencies {
         modApi("dev.isxander:yet-another-config-lib:${property("deps.yacl")}-fabric")
     } else {
         modCompileOnly("dev.isxander:yet-another-config-lib:3.7.1+1.21.6-fabric")
+    }
+
+    // Cloth Config
+    if (hasProperty("deps.cloth_config")) {
+        modApi("me.shedaniel.cloth:cloth-config-fabric:${property("deps.cloth_config")}")
+    } else {
+        modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:19.0.147")
+    }
+
+    if (hasProperty("deps.inline")) {
+        modImplementation("maven.modrinth:inline:${property("deps.inline")}")
     }
 
     implementation("folk.sisby:kaleido-config:${property("deps.kaleido")}")
@@ -122,7 +136,7 @@ publishMods {
     type = BETA
     displayName = "${property("mod.name")} ${property("mod.version")} for ${stonecutter.current.version} Fabric"
     version = "${property("mod.version")}+${property("deps.minecraft")}-fabric"
-    changelog = provider { rootProject.file("CHANGELOG.md").readText() }
+    changelog = provider { rootProject.file("CHANGELOG-LATEST.md").readText() }
     modLoaders.add("fabric")
 
     modrinth {
@@ -131,6 +145,9 @@ publishMods {
         minecraftVersions.add(stonecutter.current.version)
         minecraftVersions.addAll(additionalVersions)
         requires("fabric-api")
+        if (hasProperty("deps.inline")) {
+            requires("inline")
+        }
     }
 
     curseforge {

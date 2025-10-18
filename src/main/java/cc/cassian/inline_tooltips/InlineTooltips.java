@@ -126,6 +126,18 @@ public class InlineTooltips {
                     Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
                             Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withStyle(ChatFormatting.GOLD)));
         }
+        if (CONFIG.textTooltips.recoveryCompassTooltip && itemStack.is(Items.RECOVERY_COMPASS)) {
+            var lastDeath = Minecraft.getInstance().player.getLastDeathLocation();
+            if (lastDeath.isEmpty()) return;
+            GlobalPos globalPos = lastDeath.get();
+            var pos = globalPos.pos();
+            list.add(
+                    Component.translatable("gui.inline_tooltips.target").withStyle(ChatFormatting.GRAY).append(
+                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.AQUA)));
+            list.add(
+                    Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
+                            Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withStyle(ChatFormatting.AQUA)));
+        }
         if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !itemStack.has(DataComponents.LODESTONE_TRACKER)) {
             var pos = Minecraft.getInstance().player.blockPosition();
             list.add(

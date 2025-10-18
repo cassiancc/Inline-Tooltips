@@ -25,6 +25,7 @@ public class ModConfig extends WrappedConfig {
         public boolean lodestoneTooltip = true;
         @Comment("Add tooltips based on durability.")
         public boolean durabilityTooltip = true;
+        public boolean recoveryCompassTooltip;
     }
 
     public DeveloperOptions developerOptions = new DeveloperOptions();

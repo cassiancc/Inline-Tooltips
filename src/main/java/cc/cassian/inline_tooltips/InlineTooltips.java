@@ -13,6 +13,7 @@ import com.samsthenerd.inline.utils.TextureSprite;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -26,8 +27,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.BeehiveBlock;
+//? if <1.21.8
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
@@ -64,31 +65,17 @@ public class InlineTooltips {
             var state = itemStack.get(DataComponents.LODESTONE_TRACKER);
             if (state == null || state.target().isEmpty()) return;
             GlobalPos globalPos = state.target().get();
-            var pos = globalPos.pos();
-            list.add(
-                    Component.translatable("gui.inline_tooltips.target").withStyle(ChatFormatting.GRAY).append(
-                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withColor(ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD))));
-            list.add(
-                    Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
-                            Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withColor(ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD))));
+            addCoordinates(globalPos, list, "target", ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD));
         }
         if (CONFIG.textTooltips.recoveryCompassTooltip && itemStack.is(Items.RECOVERY_COMPASS)) {
             var lastDeath = Minecraft.getInstance().player.getLastDeathLocation();
             if (lastDeath.isEmpty()) return;
             GlobalPos globalPos = lastDeath.get();
-            var pos = globalPos.pos();
-            list.add(
-                    Component.translatable("gui.inline_tooltips.target").withStyle(ChatFormatting.GRAY).append(
-                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withColor(ModHelpers.getColour(CONFIG.textTooltips.recoveryCompassTooltipColor, ChatFormatting.AQUA))));
-            list.add(
-                    Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
-                            Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withColor(ModHelpers.getColour(CONFIG.textTooltips.recoveryCompassTooltipColor, ChatFormatting.AQUA))));
+            addCoordinates(globalPos, list, "target", ModHelpers.getColour(CONFIG.textTooltips.recoveryCompassTooltipColor, ChatFormatting.AQUA));
         }
         if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !itemStack.has(DataComponents.LODESTONE_TRACKER)) {
             var pos = Minecraft.getInstance().player.blockPosition();
-            list.add(
-                    Component.translatable("gui.inline_tooltips.position").withStyle(ChatFormatting.GRAY).append(
-                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withColor(ModHelpers.getColour(CONFIG.textTooltips.compassTooltipColor, ChatFormatting.RED))));
+            addCoordinates(pos, list, "position", ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD));
         }
         if (CONFIG.textTooltips.durabilityTooltip && !tooltipFlag.isAdvanced() && itemStack.isDamaged() && itemStack.has(DataComponents.DAMAGE)) {
             list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ChatFormatting.GRAY));
@@ -96,6 +83,21 @@ public class InlineTooltips {
         if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK)) {
             list.add(Component.literal(getTime(Minecraft.getInstance().level.getDayTime())).withColor(ModHelpers.getColour(CONFIG.clockTooltip.text_color, ChatFormatting.GOLD)));
         }
+    }
+
+    private static void addCoordinates(GlobalPos globalPos, List<Component> list, String target, Integer colour) {
+        addCoordinates(globalPos.pos(), list, target, colour);
+        list.add(
+                Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
+                Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withColor(colour))
+        );
+    }
+
+    private static void addCoordinates(BlockPos pos, List<Component> list, String target, Integer colour) {
+        list.add(
+                Component.translatable("gui.inline_tooltips."+target).withStyle(ChatFormatting.GRAY).append(
+                Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withColor(colour))
+        );
     }
 
     // This code was originally authored by MehVadVukaar for Supplementaries.
@@ -151,7 +153,7 @@ public class InlineTooltips {
                         var icon = holder.unwrapKey().orElseThrow().location();
                         if (amount.get()!=0)
                             addIcon(icon, amount.get(), list, component);
-                        //? if >1.21.8
+                    //? if >1.21.8
                     }
                 });
             }

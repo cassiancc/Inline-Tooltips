@@ -67,10 +67,10 @@ public class InlineTooltips {
             var pos = globalPos.pos();
             list.add(
                     Component.translatable("gui.inline_tooltips.target").withStyle(ChatFormatting.GRAY).append(
-                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.GOLD)));
+                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withColor(ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD))));
             list.add(
                     Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
-                            Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withStyle(ChatFormatting.GOLD)));
+                            Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withColor(ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD))));
         }
         if (CONFIG.textTooltips.recoveryCompassTooltip && itemStack.is(Items.RECOVERY_COMPASS)) {
             var lastDeath = Minecraft.getInstance().player.getLastDeathLocation();
@@ -79,22 +79,22 @@ public class InlineTooltips {
             var pos = globalPos.pos();
             list.add(
                     Component.translatable("gui.inline_tooltips.target").withStyle(ChatFormatting.GRAY).append(
-                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.AQUA)));
+                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withColor(ModHelpers.getColour(CONFIG.textTooltips.recoveryCompassTooltipColor, ChatFormatting.AQUA))));
             list.add(
                     Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
-                            Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withStyle(ChatFormatting.AQUA)));
+                            Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withColor(ModHelpers.getColour(CONFIG.textTooltips.recoveryCompassTooltipColor, ChatFormatting.AQUA))));
         }
         if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !itemStack.has(DataComponents.LODESTONE_TRACKER)) {
             var pos = Minecraft.getInstance().player.blockPosition();
             list.add(
                     Component.translatable("gui.inline_tooltips.position").withStyle(ChatFormatting.GRAY).append(
-                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.RED)));
+                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withColor(ModHelpers.getColour(CONFIG.textTooltips.compassTooltipColor, ChatFormatting.RED))));
         }
         if (CONFIG.textTooltips.durabilityTooltip && !tooltipFlag.isAdvanced() && itemStack.isDamaged() && itemStack.has(DataComponents.DAMAGE)) {
             list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ChatFormatting.GRAY));
         }
         if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK)) {
-            list.add(Component.literal(getTime(Minecraft.getInstance().level.getDayTime())).withStyle(ChatFormatting.GOLD));
+            list.add(Component.literal(getTime(Minecraft.getInstance().level.getDayTime())).withColor(ModHelpers.getColour(CONFIG.clockTooltip.text_color, ChatFormatting.GOLD)));
         }
     }
 

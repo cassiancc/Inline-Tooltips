@@ -1,7 +1,10 @@
 package cc.cassian.inline_tooltips.helpers;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+
+import java.util.Objects;
 
 public class ModHelpers {
     public static String format(double amount) {
@@ -26,6 +29,28 @@ public class ModHelpers {
         //?} else {
         /*return Screen.hasAltDown();
         *///?}
+    }
+
+    /**
+     * Used to check what colour the text should be.
+     * Adapted from Item Descriptions.
+     */
+    public static Integer getColour(String colour, ChatFormatting fallback) {
+        String replacedColour = colour.toLowerCase().replace(" ", "_");
+        return switch (replacedColour) {
+            case "black", "dark_blue", "dark_green", "dark_red", "dark_purple",
+                 "blue", "green", "aqua", "red", "yellow", "white" ->
+                    Objects.requireNonNullElse(ChatFormatting.getByName(colour), ChatFormatting.GRAY).getColor();
+            case "pink", "light_purple" ->
+                    Objects.requireNonNullElse(ChatFormatting.getByName("light_purple"), ChatFormatting.GRAY).getColor();
+            case "dark_gray", "dark_grey" ->
+                    Objects.requireNonNullElse(ChatFormatting.getByName("dark_gray"), ChatFormatting.GRAY).getColor();
+            case "cyan", "dark_aqua" ->
+                    Objects.requireNonNullElse(ChatFormatting.getByName("dark_aqua"), ChatFormatting.GRAY).getColor();
+            case "orange", "gold", "dark_yellow" ->
+                    Objects.requireNonNullElse(ChatFormatting.getByName("gold"), ChatFormatting.GRAY).getColor();
+            default -> fallback.getColor();
+        };
     }
 
 }

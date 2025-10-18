@@ -19,14 +19,20 @@ public class ModConfig extends WrappedConfig {
 
     public TextTooltips textTooltips = new TextTooltips();
     public static class TextTooltips implements Section {
-        @Comment("Add tooltips to Compasses with the player's coordinates.")
-        public boolean compassTooltip = true;
-        @Comment("Add tooltips based on Lodestone Compass's destination.")
-        public boolean lodestoneTooltip = true;
         @Comment("Add tooltips based on durability.")
         public boolean durabilityTooltip = true;
+        @Comment("Add tooltips to Compasses with the player's coordinates.")
+        public boolean compassTooltip = true;
+        @Comment("Compass tooltip colour.")
+        public String compassTooltipColor = "Red";
+        @Comment("Add tooltips based on Lodestone Compass's destination.")
+        public boolean lodestoneTooltip = true;
+        @Comment("Lodestone Compass tooltip colour.")
+        public String lodestoneCompassTooltipColor = "Gold";
         @Comment("Add tooltips based on Recovery Compass's destination.")
         public boolean recoveryCompassTooltip = true;
+        @Comment("Recovery Compass tooltip colour.")
+        public String recoveryCompassTooltipColor = "Aqua";
 
     }
 
@@ -39,6 +45,8 @@ public class ModConfig extends WrappedConfig {
         public boolean day_count = true;
         @Comment("Whether to show the clock in a 24 hour format.")
         public boolean twenty_four_hour_clock = true;
+        @Comment("Text color of the clock tooltip.")
+        public String text_color = "Gold";
     }
 
     public DeveloperOptions developerOptions = new DeveloperOptions();

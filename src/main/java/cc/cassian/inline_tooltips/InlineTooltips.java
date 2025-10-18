@@ -12,6 +12,7 @@ import com.samsthenerd.inline.utils.TextureSprite;
 *///?}
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -87,11 +88,44 @@ public class InlineTooltips {
             var pos = Minecraft.getInstance().player.blockPosition();
             list.add(
                     Component.translatable("gui.inline_tooltips.position").withStyle(ChatFormatting.GRAY).append(
-                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.GOLD)));
+                            Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.RED)));
         }
         if (CONFIG.textTooltips.durabilityTooltip && !tooltipFlag.isAdvanced() && itemStack.isDamaged() && itemStack.has(DataComponents.DAMAGE)) {
             list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ChatFormatting.GRAY));
         }
+        if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK)) {
+            list.add(Component.literal(getTime(Minecraft.getInstance().level.getDayTime())).withStyle(ChatFormatting.GOLD));
+        }
+    }
+
+    // This code was originally authored by MehVadVukaar for Supplementaries.
+    // It is adapted here for our clock overlay as authorized by the
+    // Supplementaries Team License, as Inline Tooltips is not designed
+    // to compete with Supplementaries.
+    public static String getTime(float dayTime) {
+        StringBuilder currentTime = new StringBuilder();
+        if (InlineTooltips.CONFIG.clockTooltip.day_count) {
+            int day = (int) (dayTime/24000);
+            currentTime.append(I18n.get("gui.c.day", day));
+            if (InlineTooltips.CONFIG.clockTooltip.current_time) {
+                currentTime.append(", ");
+            }
+        }
+        if (InlineTooltips.CONFIG.clockTooltip.current_time) {
+            int time = (int)(dayTime + 6000L) % 24000;
+            int m = (int)((float)time % 1000.0F / 1000.0F * 60.0F);
+            int hour = time / 1000;
+            String a = "";
+            if (InlineTooltips.CONFIG.clockTooltip.twenty_four_hour_clock) {
+                a = time < 12000 ? " AM" : " PM";
+                hour %= 12;
+                if (hour == 0) {
+                    hour = 12;
+                }
+            }
+            currentTime.append(hour).append(":").append(m < 10 ? "0" : "").append(m).append(a);
+        }
+        return currentTime.toString();
     }
 
     private static void addAttributeTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {

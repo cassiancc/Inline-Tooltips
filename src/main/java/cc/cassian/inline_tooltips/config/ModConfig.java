@@ -25,7 +25,20 @@ public class ModConfig extends WrappedConfig {
         public boolean lodestoneTooltip = true;
         @Comment("Add tooltips based on durability.")
         public boolean durabilityTooltip = true;
-        public boolean recoveryCompassTooltip;
+        @Comment("Add tooltips based on Recovery Compass's destination.")
+        public boolean recoveryCompassTooltip = true;
+
+    }
+
+    public ClockTooltip clockTooltip = new ClockTooltip();
+
+    public static class ClockTooltip implements Section {
+        @Comment("Add tooltips to Clocks with the current time.")
+        public boolean current_time = true;
+        @Comment("Add tooltips to Clocks with the current day.")
+        public boolean day_count = true;
+        @Comment("Whether to show the clock in a 24 hour format.")
+        public boolean twenty_four_hour_clock = true;
     }
 
     public DeveloperOptions developerOptions = new DeveloperOptions();

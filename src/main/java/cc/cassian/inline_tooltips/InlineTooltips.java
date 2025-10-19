@@ -75,7 +75,7 @@ public class InlineTooltips {
         }
         if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !itemStack.has(DataComponents.LODESTONE_TRACKER)) {
             var pos = Minecraft.getInstance().player.blockPosition();
-            addCoordinates(pos, list, "position", ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD));
+            addCoordinates(pos, list, "position", ModHelpers.getColour(CONFIG.textTooltips.compassTooltipColor, ChatFormatting.RED));
         }
         if (CONFIG.textTooltips.durabilityTooltip && !tooltipFlag.isAdvanced() && itemStack.isDamaged() && itemStack.has(DataComponents.DAMAGE)) {
             list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ChatFormatting.GRAY));

@@ -25,10 +25,11 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.block.BeehiveBlock;
-//? if <1.21.8
+//? if <1.21.8 {
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+//?}
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightBlock;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

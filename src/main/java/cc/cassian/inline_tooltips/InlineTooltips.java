@@ -64,14 +64,12 @@ public class InlineTooltips {
         if (CONFIG.textTooltips.lodestoneTooltip && itemStack.has(DataComponents.LODESTONE_TRACKER)) {
             var state = itemStack.get(DataComponents.LODESTONE_TRACKER);
             if (state == null || state.target().isEmpty()) return;
-            GlobalPos globalPos = state.target().get();
-            addCoordinates(globalPos, list, "target", ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD));
+            addCoordinates(state.target().get(), list, "target", ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD));
         }
         if (CONFIG.textTooltips.recoveryCompassTooltip && itemStack.is(Items.RECOVERY_COMPASS)) {
             var lastDeath = Minecraft.getInstance().player.getLastDeathLocation();
             if (lastDeath.isEmpty()) return;
-            GlobalPos globalPos = lastDeath.get();
-            addCoordinates(globalPos, list, "target", ModHelpers.getColour(CONFIG.textTooltips.recoveryCompassTooltipColor, ChatFormatting.AQUA));
+            addCoordinates(lastDeath.get(), list, "target", ModHelpers.getColour(CONFIG.textTooltips.recoveryCompassTooltipColor, ChatFormatting.AQUA));
         }
         if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !itemStack.has(DataComponents.LODESTONE_TRACKER)) {
             var pos = Minecraft.getInstance().player.blockPosition();

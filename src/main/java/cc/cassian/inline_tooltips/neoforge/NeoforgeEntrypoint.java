@@ -18,7 +18,7 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import static cc.cassian.inline_tooltips.InlineTooltips.CONFIG;
 
 @Mod(value = InlineTooltips.MOD_ID, dist = Dist.CLIENT)
-@EventBusSubscriber // sample_content
+@EventBusSubscriber
 public class NeoforgeEntrypoint {
 
     public NeoforgeEntrypoint() {

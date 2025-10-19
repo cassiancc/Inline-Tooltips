@@ -7,20 +7,23 @@ public class ModConfig extends WrappedConfig {
 
     public IconTooltips iconTooltips = new IconTooltips();
     public static class IconTooltips implements Section {
+        @Comment("Add tooltips based on item attributes.")
+        public boolean attributeTooltips = true;
         @Comment("Add tooltips based on fuel levels.")
         public boolean fuelTooltip = true;
         @Comment("Add tooltips based on amount of bees.")
         public boolean beesTooltip = true;
-        @Comment("Add tooltips based on item attributes.")
-        public boolean attributeTooltips = true;
         @Comment("Add tooltips based on amount of honey.")
         public boolean honeyTooltip = true;
+        @Comment("Add tooltips based on light level.")
+        public boolean lightLevelTooltip = true;
     }
 
     public TextTooltips textTooltips = new TextTooltips();
     public static class TextTooltips implements Section {
         @Comment("Add tooltips based on durability.")
         public boolean durabilityTooltip = true;
+        public String durabilityTooltipColor = "Gray";
         @Comment("Add tooltips to Compasses with the player's coordinates.")
         public boolean compassTooltip = true;
         @Comment("Compass tooltip colour.")
@@ -33,7 +36,6 @@ public class ModConfig extends WrappedConfig {
         public boolean recoveryCompassTooltip = true;
         @Comment("Recovery Compass tooltip colour.")
         public String recoveryCompassTooltipColor = "Aqua";
-
     }
 
     public ClockTooltip clockTooltip = new ClockTooltip();

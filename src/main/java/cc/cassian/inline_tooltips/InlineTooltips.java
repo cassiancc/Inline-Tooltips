@@ -22,13 +22,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.block.BeehiveBlock;
 //? if <1.21.8
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
@@ -49,17 +48,18 @@ public class InlineTooltips {
 
     public static void addTooltips(ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag, List<Component> list) {
         // Add icon tooltips
+        var component = Component.empty();
+        // Attribute Modifiers
         if (!ModHelpers.hasShiftDown()) {
-            var component = Component.empty();
-            // Attribute Modifiers
             addAttributeTooltips(itemStack, list, component);
-            addBeeTooltips(itemStack, list, component);
-            addFuelTooltips(itemStack, list, component);
-            addHoneyTooltips(itemStack, list, component);
-            // Add icon
-            if (!component.equals(Component.empty()))
-                list.add(component);
         }
+        addBeeTooltips(itemStack, list, component);
+        addFuelTooltips(itemStack, list, component);
+        addHoneyTooltips(itemStack, list, component);
+        addLightLevelTooltips(itemStack, list, component);
+        // Add icon
+        if (!component.equals(Component.empty()))
+            list.add(component);
         // Add text tooltips
         if (CONFIG.textTooltips.lodestoneTooltip && itemStack.has(DataComponents.LODESTONE_TRACKER)) {
             var state = itemStack.get(DataComponents.LODESTONE_TRACKER);
@@ -76,7 +76,7 @@ public class InlineTooltips {
             addCoordinates(pos, list, "position", ModHelpers.getColour(CONFIG.textTooltips.compassTooltipColor, ChatFormatting.RED));
         }
         if (CONFIG.textTooltips.durabilityTooltip && !tooltipFlag.isAdvanced() && itemStack.isDamaged() && itemStack.has(DataComponents.DAMAGE)) {
-            list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ChatFormatting.GRAY));
+            list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withColor(ModHelpers.getColour(CONFIG.textTooltips.durabilityTooltipColor, ChatFormatting.GRAY)));
         }
         if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK)) {
             list.add(Component.literal(getTime(Minecraft.getInstance().level.getDayTime())).withColor(ModHelpers.getColour(CONFIG.clockTooltip.text_color, ChatFormatting.GOLD)));
@@ -162,7 +162,7 @@ public class InlineTooltips {
         if (itemStack.has(DataComponents.BEES) && CONFIG.iconTooltips.beesTooltip) {
             var bees = itemStack.get(DataComponents.BEES);
             if (bees == null) return;
-            addIcon(ResourceLocation.withDefaultNamespace("bees"), bees
+            addIcon(id("bees"), bees
                     //? if >1.21.8
                     .bees()
                     .size(), list, component);
@@ -179,7 +179,7 @@ public class InlineTooltips {
                             /*AbstractFurnaceBlockEntity
                              *///?}
                             .isFuel(itemStack)) {
-                addIcon(ResourceLocation.withDefaultNamespace("fuel"),
+                addIcon(id("fuel"),
                         //? if >1.21.8 {
                         level.fuelValues().burnDuration(itemStack)
                                 //?} else {
@@ -196,7 +196,25 @@ public class InlineTooltips {
             if (state == null) return;
             var honey = state.get(BeehiveBlock.HONEY_LEVEL);
             if (honey == null) return;
-            addIcon(ResourceLocation.withDefaultNamespace("honey"), honey, list, component);
+            addIcon(id("honey"), honey, list, component);
+        }
+    }
+
+    private static void addLightLevelTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
+        if (CONFIG.iconTooltips.lightLevelTooltip) {
+            if (itemStack.getItem() instanceof BlockItem blockItem) {
+                if (blockItem.getBlock() == Blocks.LIGHT) {
+                    var stateComponent =  itemStack.get(DataComponents.BLOCK_STATE);
+                    Integer light = stateComponent != null ? stateComponent.get(LightBlock.LEVEL) : null;
+                    if (light != null && light != 0)
+                        addIcon(id("light"), light, list, component);
+                } else {
+                    var state = blockItem.getBlock().defaultBlockState();
+                    int light = state.getLightEmission();
+                    if (light != 0)
+                        addIcon(id("light"), light, list, component);
+                }
+            }
         }
     }
 

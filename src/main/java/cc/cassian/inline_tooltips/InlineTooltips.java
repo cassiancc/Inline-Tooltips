@@ -26,8 +26,8 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.block.BeehiveBlock;
 //? if <1.21.8 {
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-//?}
+/*import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+*///?}
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightBlock;
 import org.apache.commons.lang3.text.WordUtils;
@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class InlineTooltips {
@@ -51,9 +52,7 @@ public class InlineTooltips {
         // Add icon tooltips
         var component = Component.empty();
         // Attribute Modifiers
-        if (!ModHelpers.hasShiftDown()) {
-            addAttributeTooltips(itemStack, list, component);
-        }
+        addAttributeTooltips(itemStack, list, component);
         addBeeTooltips(itemStack, list, component);
         addFuelTooltips(itemStack, list, component);
         addHoneyTooltips(itemStack, list, component);
@@ -151,7 +150,7 @@ public class InlineTooltips {
                         amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
                         var icon = holder.unwrapKey().orElseThrow().location();
                         if (amount.get()!=0)
-                            addIcon(icon, amount.get(), list, component);
+                            addIcon(icon, amount.get(), list, component, Component.translatable("item.modifiers."+equipmentSlotGroup.name().toLowerCase(Locale.ROOT)));
                     //? if >1.21.8
                     }
                 });
@@ -166,7 +165,7 @@ public class InlineTooltips {
             addIcon(id("bees"), bees
                     //? if >1.21.8
                     .bees()
-                    .size(), list, component);
+                    .size(), list, component, null);
         }
     }
 
@@ -186,7 +185,7 @@ public class InlineTooltips {
                                 //?} else {
                                 /*AbstractFurnaceBlockEntity.getFuel().get(itemStack.getItem())
                                  *///?}
-                                /200f, list, component);
+                                /200f, list, component, Component.translatable("item.modifiers.furnace"));
             }
         }
     }
@@ -197,7 +196,7 @@ public class InlineTooltips {
             if (state == null) return;
             var honey = state.get(BeehiveBlock.HONEY_LEVEL);
             if (honey == null) return;
-            addIcon(id("honey"), honey, list, component);
+            addIcon(id("honey"), honey, list, component, null);
         }
     }
 
@@ -208,18 +207,23 @@ public class InlineTooltips {
                     var stateComponent =  itemStack.get(DataComponents.BLOCK_STATE);
                     Integer light = stateComponent != null ? stateComponent.get(LightBlock.LEVEL) : null;
                     if (light != null && light != 0)
-                        addIcon(id("light"), light, list, component);
+                        addIcon(id("light"), light, list, component, Component.translatable("item.modifiers.placed"));
                 } else {
                     var state = blockItem.getBlock().defaultBlockState();
                     int light = state.getLightEmission();
                     if (light != 0)
-                        addIcon(id("light"), light, list, component);
+                        addIcon(id("light"), light, list, component, Component.translatable("item.modifiers.placed"));
                 }
             }
         }
     }
 
-    private static void addIcon(ResourceLocation attribute, double amount, List<Component> list, MutableComponent component) {
+    private static void addIcon(ResourceLocation attribute, double amount, List<Component> list, MutableComponent component, MutableComponent usedText) {
+        if (ModHelpers.hasShiftDown() && usedText != null && !list.contains(usedText.withStyle(ChatFormatting.GRAY))) {
+            list.add(Component.empty());
+            list.add(usedText.withStyle(ChatFormatting.GRAY));
+        }
+
         //? if >1.21.8 {
         ResourceLocation icon = ResourceLocation.fromNamespaceAndPath(attribute.getNamespace(), "inline_tooltip_icons/"+ attribute.getPath());
         MutableComponent iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, icon));
@@ -228,11 +232,16 @@ public class InlineTooltips {
         var style = InlineStyle.fromInlineData(new SpriteInlineData(new TextureSprite(icon)));;
         MutableComponent iconComponent = Component.literal(".").setStyle(style);
         *///?}
-        iconComponent.append(ModHelpers.format(amount) + " ");
+
         if (ModHelpers.hasAltDown() && InlineTooltips.CONFIG.developerOptions.debugInfo) {
+            iconComponent.append(ModHelpers.format(amount) + " ");
             iconComponent.append(Component.literal(" (%s)".formatted(attribute)));
             list.add(iconComponent);
+        } else if (ModHelpers.hasShiftDown()) {
+            iconComponent.append(Component.translatable(attribute.toLanguageKey("tooltip"), ModHelpers.format(amount)).withStyle(ChatFormatting.DARK_GREEN));
+            list.add(iconComponent);
         } else {
+            iconComponent.append(ModHelpers.format(amount) + " ");
             component.append(iconComponent);
         }
     }

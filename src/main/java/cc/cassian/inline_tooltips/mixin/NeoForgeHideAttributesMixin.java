@@ -29,7 +29,7 @@ public class NeoForgeHideAttributesMixin {
     /*@WrapMethod(method = "lambda$applyModifierTooltips$1")
     private static boolean applyModifiers(GatherSkippedAttributeTooltipsEvent event, AttributeModifier m, Operation<Boolean> original) {
         // Disable default tooltip
-        if (ModHelpers.hasShiftDown() || !CONFIG.iconTooltips.attributeTooltips) {
+        if (!CONFIG.iconTooltips.attributeTooltips) {
             return original.call(event, m);
         }
         return false;

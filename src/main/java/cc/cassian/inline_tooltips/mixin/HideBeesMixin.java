@@ -23,7 +23,7 @@ public class HideBeesMixin {
     @WrapOperation(at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"), method = "addToTooltip")
     private static <T> void init(Consumer instance, T t, Operation<Void> original) {
         // Disable default tooltip
-        if (ModHelpers.hasShiftDown() || !CONFIG.iconTooltips.beesTooltip) {
+        if (!CONFIG.iconTooltips.beesTooltip) {
             original.call(instance, t);
         }
     }

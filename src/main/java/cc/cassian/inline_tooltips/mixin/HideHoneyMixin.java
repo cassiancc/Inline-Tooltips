@@ -18,7 +18,7 @@ public class HideHoneyMixin {
 	@WrapOperation(at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"), method = "addToTooltip")
 	private static <T> void init(Consumer instance, T t, Operation<Void> original) {
         // Disable default tooltip
-        if (Minecraft.getInstance().hasShiftDown() || !CONFIG.iconTooltips.honeyTooltip) {
+        if (!CONFIG.iconTooltips.honeyTooltip) {
             original.call(instance, t);
         }
     }

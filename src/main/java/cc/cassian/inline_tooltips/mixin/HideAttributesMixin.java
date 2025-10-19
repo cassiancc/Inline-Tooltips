@@ -26,7 +26,7 @@ public class HideAttributesMixin {
 	@WrapOperation(at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;isTrue()Z"), method = "method_57370")
 	private static boolean init(MutableBoolean instance, Operation<Boolean> original, @Local Consumer<Component> consumer, @Local AttributeModifier attributeModifier) {
         // Disable default tooltip
-        if (ModHelpers.hasShiftDown() || !CONFIG.iconTooltips.attributeTooltips) {
+        if (!CONFIG.iconTooltips.attributeTooltips) {
             return original.call(instance);
         }
         return false;
@@ -36,7 +36,7 @@ public class HideAttributesMixin {
     @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/component/ItemAttributeModifiers$Display;apply(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/Holder;Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;)V"), method = "method_57370")
     private static void init(ItemAttributeModifiers.Display instance, Consumer<Component> consumer, Player player, Holder<Attribute> attributeHolder, AttributeModifier attributeModifier, Operation<Void> original) {
         // Enable our tooltip
-        if (ModHelpers.hasShiftDown() || !CONFIG.iconTooltips.attributeTooltips) {
+        if (!CONFIG.iconTooltips.attributeTooltips) {
             original.call(instance, consumer, player, attributeHolder, attributeModifier);
         }
     }
@@ -44,7 +44,7 @@ public class HideAttributesMixin {
     /*@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;addModifierTooltip(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/Holder;Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;)V"), method = "method_57370")
     private static void removeAttribute(ItemStack instance, Consumer consumer, Player player, Holder holder, AttributeModifier attributeModifier, Operation<Void> original) {
         // Enable our tooltip
-        if (ModHelpers.hasShiftDown() || !CONFIG.iconTooltips.attributeTooltips) {
+        if (!CONFIG.iconTooltips.attributeTooltips) {
             original.call(instance, consumer, player, holder, attributeModifier);
         }
     }
@@ -55,7 +55,7 @@ public class HideAttributesMixin {
     /*@WrapOperation(at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;isTrue()Z"), method = "lambda$addAttributeTooltips$19")
     private static boolean init(MutableBoolean instance, Operation<Boolean> original) {
         // Disable default tooltip
-        if (ModHelpers.hasShiftDown() || !CONFIG.iconTooltips.attributeTooltips) {
+        if (!CONFIG.iconTooltips.attributeTooltips) {
             original.call(instance);
         }
         return false;
@@ -65,7 +65,7 @@ public class HideAttributesMixin {
     @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/component/ItemAttributeModifiers$Display;apply(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/Holder;Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;)V"), method = "lambda$addAttributeTooltips$19")
     private static void init(ItemAttributeModifiers.Display instance, Consumer<Component> consumer, Player player, Holder<Attribute> attributeHolder, AttributeModifier attributeModifier, Operation<Void> original) {
         // Enable our tooltip
-        if (ModHelpers.hasShiftDown() || !CONFIG.iconTooltips.attributeTooltips) {
+        if (!CONFIG.iconTooltips.attributeTooltips) {
             original.call(instance, consumer, player, attributeHolder, attributeModifier);
         }
     }
@@ -73,7 +73,7 @@ public class HideAttributesMixin {
     /*@WrapOperation(at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;isTrue()Z"), method = "lambda$addAttributeTooltips$21")
     private static boolean init(MutableBoolean instance, Operation<Boolean> original) {
         // Disable default tooltip
-        if (ModHelpers.hasShiftDown() || !CONFIG.iconTooltips.attributeTooltips) {
+        if (!CONFIG.iconTooltips.attributeTooltips) {
             original.call(instance);
         }
         return false;
@@ -83,7 +83,7 @@ public class HideAttributesMixin {
     @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;addModifierTooltip(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/Holder;Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;)V"), method = "lambda$addAttributeTooltips$21")
     private static void init(ItemStack instance, Consumer consumer, Player player, Holder holder, AttributeModifier attributeModifier, Operation<Void> original) {
         // Enable our tooltip
-        if (ModHelpers.hasShiftDown() || !CONFIG.iconTooltips.attributeTooltips) {
+        if (!CONFIG.iconTooltips.attributeTooltips) {
             original.call(instance, consumer, player, holder, attributeModifier);
         }
     }

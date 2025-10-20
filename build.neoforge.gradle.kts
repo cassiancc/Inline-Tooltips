@@ -142,7 +142,7 @@ publishMods {
     file = tasks.jar.map { it.archiveFile.get() }
     additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
 
-    type = BETA
+    type = STABLE
     displayName = "${property("mod.name")} ${property("mod.version")} for ${stonecutter.current.version} Neoforge"
     version = "${property("mod.version")}+${property("deps.minecraft")}-neoforge"
     changelog = provider { rootProject.file("CHANGELOG-LATEST.md").readText() }
@@ -156,6 +156,7 @@ publishMods {
         if (hasProperty("deps.inline")) {
             requires("inline")
         }
+        optional("mcqoy")
     }
 
     curseforge {
@@ -163,5 +164,8 @@ publishMods {
         accessToken = env.CURSEFORGE_API_KEY.orNull()
         minecraftVersions.add(stonecutter.current.version)
         minecraftVersions.addAll(additionalVersions)
+        if (hasProperty("deps.inline")) {
+            requires("inline")
+        }
     }
 }

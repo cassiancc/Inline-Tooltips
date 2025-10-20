@@ -24,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeehiveBlock;
 //? if <1.21.8 {
 /*import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -49,6 +50,7 @@ public class InlineTooltips {
 
 
     public static void addTooltips(ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag, List<Component> list) {
+        var player = Minecraft.getInstance().player;
         // Add icon tooltips
         var component = Component.empty();
         // Attribute Modifiers
@@ -66,19 +68,19 @@ public class InlineTooltips {
             if (state == null || state.target().isEmpty()) return;
             addCoordinates(state.target().get(), list, "target", ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD));
         }
-        if (CONFIG.textTooltips.recoveryCompassTooltip && itemStack.is(Items.RECOVERY_COMPASS)) {
-            var lastDeath = Minecraft.getInstance().player.getLastDeathLocation();
+        if (CONFIG.textTooltips.recoveryCompassTooltip && itemStack.is(Items.RECOVERY_COMPASS) && player != null) {
+            var lastDeath = player.getLastDeathLocation();
             if (lastDeath.isEmpty()) return;
             addCoordinates(lastDeath.get(), list, "target", ModHelpers.getColour(CONFIG.textTooltips.recoveryCompassTooltipColor, ChatFormatting.AQUA));
         }
-        if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !itemStack.has(DataComponents.LODESTONE_TRACKER)) {
-            var pos = Minecraft.getInstance().player.blockPosition();
+        if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !itemStack.has(DataComponents.LODESTONE_TRACKER) && player != null) {
+            var pos = player.blockPosition();
             addCoordinates(pos, list, "position", ModHelpers.getColour(CONFIG.textTooltips.compassTooltipColor, ChatFormatting.RED));
         }
         if (CONFIG.textTooltips.durabilityTooltip && !tooltipFlag.isAdvanced() && itemStack.isDamaged() && itemStack.has(DataComponents.DAMAGE)) {
             list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withColor(ModHelpers.getColour(CONFIG.textTooltips.durabilityTooltipColor, ChatFormatting.GRAY)));
         }
-        if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK)) {
+        if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK) && player != null) {
             list.add(Component.literal(getTime(Minecraft.getInstance().level.getDayTime())).withColor(ModHelpers.getColour(CONFIG.clockTooltip.text_color, ChatFormatting.GOLD)));
         }
     }
@@ -179,15 +181,30 @@ public class InlineTooltips {
                             /*AbstractFurnaceBlockEntity
                              *///?}
                             .isFuel(itemStack)) {
-                addIcon(id("fuel"),
-                        //? if >1.21.8 {
-                        level.fuelValues().burnDuration(itemStack)
-                                //?} else {
-                                /*AbstractFurnaceBlockEntity.getFuel().get(itemStack.getItem())
-                                 *///?}
-                                /200f, list, component, Component.translatable("item.modifiers.furnace"));
+                addIcon(id("fuel"), getFuelValue(level, itemStack) /200f, list, component, Component.translatable("item.modifiers.furnace"));
             }
         }
+    }
+
+    private static double getFuelValue(Level level, ItemStack itemStack) {
+        //? if >1.21.8 && fabric {
+        int value = level.fuelValues().burnDuration(itemStack)
+        //?} else if fabric {
+        /*Integer value = AbstractFurnaceBlockEntity.getFuel().get(itemStack.getItem());
+         *///?} else {
+                                /*int value = itemStack.getBurnTime(null
+                                //? if >1.21.8
+                                /^, level.fuelValues()^/
+                                )
+                                *///?}
+        ;
+        //? if =1.21.1 && fabric {
+        /*if (value != null)
+        *///?}
+            return value;
+        //? if =1.21.1 && fabric {
+        /*return 0;
+        *///?}
     }
 
     private static void addHoneyTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {

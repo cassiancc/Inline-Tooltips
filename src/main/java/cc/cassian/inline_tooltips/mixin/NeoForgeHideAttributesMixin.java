@@ -9,10 +9,10 @@ import net.minecraft.world.item.ItemStack;
 //? if neoforge {
 /*import net.neoforged.neoforge.common.util.AttributeUtil;
 //? if >1.21.8 {
-import net.neoforged.neoforge.event.GatherSkippedAttributeTooltipsEvent;
-//?} else {
-/^import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
-^///?}
+/^import net.neoforged.neoforge.event.GatherSkippedAttributeTooltipsEvent;
+^///?} else {
+import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
+//?}
 *///?}
 import org.spongepowered.asm.mixin.Mixin;
 

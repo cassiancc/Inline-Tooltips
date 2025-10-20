@@ -149,7 +149,6 @@ public class InlineTooltips {
                                         attributeModifier.amount() * player.getAttributeBaseValue(holder);
                             });
                         }
-                        display.apply();
                         amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
                         var icon = holder.unwrapKey().orElseThrow().location();
                         if (amount.get()!=0)
@@ -256,7 +255,12 @@ public class InlineTooltips {
             iconComponent.append(Component.literal(" (%s)".formatted(attribute)));
             list.add(iconComponent);
         } else if (ModHelpers.hasShiftDown()) {
-            iconComponent.append(Component.translatable(attribute.toLanguageKey("tooltip"), ModHelpers.format(amount)).withColor(attributeColor));
+            var key = attribute.toLanguageKey("tooltip");
+            if (I18n.exists(key)) {
+                iconComponent.append(Component.translatable(key, ModHelpers.format(amount)).withColor(attributeColor));
+            } else {
+                iconComponent.append(Component.literal("%s %s".formatted(ModHelpers.format(amount), WordUtils.capitalizeFully(attribute.getPath().replace("_", " ")))).withColor(attributeColor));
+            }
             list.add(iconComponent);
         } else {
             iconComponent.append(ModHelpers.format(amount) + " ");

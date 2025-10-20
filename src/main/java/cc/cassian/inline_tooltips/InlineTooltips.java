@@ -149,10 +149,11 @@ public class InlineTooltips {
                                         attributeModifier.amount() * player.getAttributeBaseValue(holder);
                             });
                         }
+                        display.apply();
                         amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
                         var icon = holder.unwrapKey().orElseThrow().location();
                         if (amount.get()!=0)
-                            addIcon(icon, amount.get(), list, component, Component.translatable("item.modifiers."+equipmentSlotGroup.name().toLowerCase(Locale.ROOT)));
+                            addIcon(icon, amount.get(), list, component, Component.translatable("item.modifiers."+equipmentSlotGroup.name().toLowerCase(Locale.ROOT)), ModHelpers.getColour(CONFIG.iconTooltips.attributeTooltipColor, ChatFormatting.DARK_GREEN));
                     //? if >1.21.8
                     }
                 });
@@ -167,7 +168,7 @@ public class InlineTooltips {
             addIcon(id("bees"), bees
                     //? if >1.21.8
                     .bees()
-                    .size(), list, component, null);
+                    .size(), list, component, null, ModHelpers.getColour(CONFIG.iconTooltips.beeTooltipColor, ChatFormatting.GOLD));
         }
     }
 
@@ -181,7 +182,7 @@ public class InlineTooltips {
                             /*AbstractFurnaceBlockEntity
                              *///?}
                             .isFuel(itemStack)) {
-                addIcon(id("fuel"), getFuelValue(level, itemStack) /200f, list, component, Component.translatable("item.modifiers.furnace"));
+                addIcon(id("fuel"), getFuelValue(level, itemStack) /200f, list, component, Component.translatable("item.modifiers.furnace"), ModHelpers.getColour(CONFIG.iconTooltips.fuelTooltipColor, ChatFormatting.GOLD));
             }
         }
     }
@@ -213,7 +214,7 @@ public class InlineTooltips {
             if (state == null) return;
             var honey = state.get(BeehiveBlock.HONEY_LEVEL);
             if (honey == null) return;
-            addIcon(id("honey"), honey, list, component, null);
+            addIcon(id("honey"), honey, list, component, null, ModHelpers.getColour(CONFIG.iconTooltips.honeyTooltipColor, ChatFormatting.GOLD));
         }
     }
 
@@ -224,18 +225,18 @@ public class InlineTooltips {
                     var stateComponent =  itemStack.get(DataComponents.BLOCK_STATE);
                     Integer light = stateComponent != null ? stateComponent.get(LightBlock.LEVEL) : null;
                     if (light != null && light != 0)
-                        addIcon(id("light"), light, list, component, Component.translatable("item.modifiers.placed"));
+                        addIcon(id("light"), light, list, component, Component.translatable("item.modifiers.placed"), ModHelpers.getColour(CONFIG.iconTooltips.lightLevelTooltipColor, ChatFormatting.GOLD));
                 } else {
                     var state = blockItem.getBlock().defaultBlockState();
                     int light = state.getLightEmission();
                     if (light != 0)
-                        addIcon(id("light"), light, list, component, Component.translatable("item.modifiers.placed"));
+                        addIcon(id("light"), light, list, component, Component.translatable("item.modifiers.placed"), ModHelpers.getColour(CONFIG.iconTooltips.lightLevelTooltipColor, ChatFormatting.GOLD));
                 }
             }
         }
     }
 
-    private static void addIcon(ResourceLocation attribute, double amount, List<Component> list, MutableComponent component, MutableComponent usedText) {
+    private static void addIcon(ResourceLocation attribute, double amount, List<Component> list, MutableComponent component, MutableComponent usedText, Integer attributeColor) {
         if (ModHelpers.hasShiftDown() && usedText != null && !list.contains(usedText.withStyle(ChatFormatting.GRAY))) {
             list.add(Component.empty());
             list.add(usedText.withStyle(ChatFormatting.GRAY));
@@ -255,7 +256,7 @@ public class InlineTooltips {
             iconComponent.append(Component.literal(" (%s)".formatted(attribute)));
             list.add(iconComponent);
         } else if (ModHelpers.hasShiftDown()) {
-            iconComponent.append(Component.translatable(attribute.toLanguageKey("tooltip"), ModHelpers.format(amount)).withStyle(ChatFormatting.DARK_GREEN));
+            iconComponent.append(Component.translatable(attribute.toLanguageKey("tooltip"), ModHelpers.format(amount)).withColor(attributeColor));
             list.add(iconComponent);
         } else {
             iconComponent.append(ModHelpers.format(amount) + " ");

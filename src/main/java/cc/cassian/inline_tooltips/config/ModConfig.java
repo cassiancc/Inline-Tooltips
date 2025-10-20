@@ -9,14 +9,19 @@ public class ModConfig extends WrappedConfig {
     public static class IconTooltips implements Section {
         @Comment("Add tooltips based on item attributes.")
         public boolean attributeTooltips = true;
+        public String attributeTooltipColor = "Dark Green";
         @Comment("Add tooltips based on fuel levels.")
         public boolean fuelTooltip = true;
+        public String fuelTooltipColor = "Gold";
         @Comment("Add tooltips based on amount of bees.")
         public boolean beesTooltip = true;
+        public String beeTooltipColor = "Gold";
         @Comment("Add tooltips based on amount of honey.")
         public boolean honeyTooltip = true;
+        public String honeyTooltipColor = "Gold";
         @Comment("Add tooltips based on light level.")
         public boolean lightLevelTooltip = true;
+        public String lightLevelTooltipColor = "Gold";
     }
 
     public TextTooltips textTooltips = new TextTooltips();

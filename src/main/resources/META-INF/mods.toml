@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/cassiancc/Inline-Tooltips/issues"
+modURL="https://modrinth.com/project/inline-tooltips"
+
+[[mods]]
+modId = "inline_tooltips"
+displayName = "Inline Tooltips"
+version = "${version}"
+displayURL="https://modrinth.com/project/inline-tooltips"
+logoFile = "assets/inline_tooltips/icon.png"
+authors = "cassiancc"
+description = '''This mod adds styled tooltips for durability, attributes, components, fuel, and more.'''
+
+[[dependencies.inline_tooltips]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,48)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.inline_tooltips]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,1.20.2)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.inline_tooltips]]
+modId = "inline"
+mandatory = true
+versionRange = "[1.20.1-1.2.2, )"
+ordering = "NONE"
+side = "CLIENT"

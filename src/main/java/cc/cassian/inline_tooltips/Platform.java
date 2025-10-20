@@ -8,6 +8,7 @@ import java.nio.file.Path;
 /*import cc.cassian.inline_tooltips.neoforge.NeoforgePlatformImpl;
 *///?}
 
+
 public interface Platform {
 
     //? fabric {

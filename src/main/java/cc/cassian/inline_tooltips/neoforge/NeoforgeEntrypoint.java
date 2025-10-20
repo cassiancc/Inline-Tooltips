@@ -26,12 +26,12 @@ public class NeoforgeEntrypoint {
     }
 
     @SubscribeEvent
-    public static void onPlayerDamage(ItemTooltipEvent event) {
+    public static void addTooltip(ItemTooltipEvent event) {
         InlineTooltips.addTooltips(event.getItemStack(), event.getContext(), event.getFlags(), event.getToolTip());
     }
 
     @SubscribeEvent
-    public static void onPlayerDamage(GatherSkippedAttributeTooltipsEvent event) {
+    public static void hideBuiltInAttributeTooltip(GatherSkippedAttributeTooltipsEvent event) {
         if (!ModHelpers.hasShiftDown() && CONFIG.iconTooltips.attributeTooltips) {
             event.setSkipAll(true);
         }

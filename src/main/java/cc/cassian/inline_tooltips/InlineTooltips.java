@@ -4,7 +4,7 @@ import cc.cassian.inline_tooltips.compat.ModCompat;
 import cc.cassian.inline_tooltips.config.ModConfig;
 import cc.cassian.inline_tooltips.helpers.ModHelpers;
 import cc.cassian.inline_tooltips.helpers.SharpnessHelpers;
-//? if =1.21.1 {
+//? if =1.21.1 || 1.20.1 {
 /*import com.samsthenerd.inline.api.InlineAPI;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.data.SpriteInlineData;
@@ -16,15 +16,23 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.core.component.DataComponents;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 //? if >1.21.8
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+//? if >1.21 {
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+//?}
+
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeehiveBlock;
 //? if <1.21.8 {
@@ -50,7 +58,10 @@ public class InlineTooltips {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 
-    public static void addTooltips(ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag, List<Component> list) {
+    public static void addTooltips(ItemStack itemStack,
+                                   //? if >1.21
+                                   Item.TooltipContext tooltipContext,
+                                   TooltipFlag tooltipFlag, List<Component> list) {
         var player = Minecraft.getInstance().player;
         // Add icon tooltips
         var component = Component.empty();
@@ -65,40 +76,60 @@ public class InlineTooltips {
         if (!component.equals(Component.empty()))
             list.add(component);
         // Add text tooltips
-        if (CONFIG.textTooltips.lodestoneTooltip && itemStack.has(DataComponents.LODESTONE_TRACKER)) {
+        if (CONFIG.textTooltips.lodestoneTooltip &&
+                //? if >1.21 {
+                 itemStack.has(DataComponents.LODESTONE_TRACKER)
+                //?} else {
+                /*CompassItem.isLodestoneCompass(itemStack)
+                *///?}
+        ) {
+            //? if >1.21 {
             var state = itemStack.get(DataComponents.LODESTONE_TRACKER);
             if (state == null || state.target().isEmpty()) return;
-            addCoordinates(state.target().get(), list, "target", ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD));
+            var pos = state.target().get();
+            //?} else {
+            /*var pos = CompassItem.getLodestonePosition(itemStack.getTag());
+            *///?}
+            addCoordinates(pos, list, "target", ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD));
         }
         if (CONFIG.textTooltips.recoveryCompassTooltip && itemStack.is(Items.RECOVERY_COMPASS) && player != null) {
             var lastDeath = player.getLastDeathLocation();
             if (lastDeath.isEmpty()) return;
             addCoordinates(lastDeath.get(), list, "target", ModHelpers.getColour(CONFIG.textTooltips.recoveryCompassTooltipColor, ChatFormatting.AQUA));
         }
-        if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !itemStack.has(DataComponents.LODESTONE_TRACKER) && player != null) {
+        if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !
+                //? if >1.21 {
+                itemStack.has(DataComponents.LODESTONE_TRACKER)
+                //?} else {
+                /*CompassItem.isLodestoneCompass(itemStack)
+                *///?}
+                && player != null) {
             var pos = player.blockPosition();
             addCoordinates(pos, list, "position", ModHelpers.getColour(CONFIG.textTooltips.compassTooltipColor, ChatFormatting.RED));
         }
-        if (CONFIG.textTooltips.durabilityTooltip && !tooltipFlag.isAdvanced() && itemStack.isDamaged() && itemStack.has(DataComponents.DAMAGE)) {
-            list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withColor(ModHelpers.getColour(CONFIG.textTooltips.durabilityTooltipColor, ChatFormatting.GRAY)));
+        if (CONFIG.textTooltips.durabilityTooltip && !tooltipFlag.isAdvanced() && itemStack.isDamaged()
+                //? if >1.21
+                && itemStack.has(DataComponents.DAMAGE)
+        ) {
+            list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ModHelpers.getColour(CONFIG.textTooltips.durabilityTooltipColor, ChatFormatting.GRAY)));
         }
         if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK) && player != null) {
-            list.add(Component.literal(getTime(Minecraft.getInstance().level.getDayTime())).withColor(ModHelpers.getColour(CONFIG.clockTooltip.text_color, ChatFormatting.GOLD)));
+            list.add(Component.literal(getTime(Minecraft.getInstance().level.getDayTime())).withStyle(ModHelpers.getColour(CONFIG.clockTooltip.text_color, ChatFormatting.GOLD)));
         }
     }
 
-    private static void addCoordinates(GlobalPos globalPos, List<Component> list, String target, Integer colour) {
+    private static void addCoordinates(GlobalPos globalPos, List<Component> list, String target, ChatFormatting colour) {
         addCoordinates(globalPos.pos(), list, target, colour);
         list.add(
                 Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
-                Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withColor(colour))
+                Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withStyle(colour))
         );
     }
 
-    private static void addCoordinates(BlockPos pos, List<Component> list, String target, Integer colour) {
+    private static void addCoordinates(BlockPos pos, List<Component> list, String target, ChatFormatting colour) {
         list.add(
                 Component.translatable("gui.inline_tooltips."+target).withStyle(ChatFormatting.GRAY).append(
-                Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withColor(colour))
+                Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withStyle(colour))
         );
     }
 
@@ -134,25 +165,61 @@ public class InlineTooltips {
 
     private static void addAttributeTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
         if (CONFIG.iconTooltips.attributeTooltips) {
+            //? if >1.21 {
             for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
+            //?} else {
+            /*for (EquipmentSlot equipmentSlotGroup : EquipmentSlot.values()) {
+            *///?}
                 //? if >1.21.8 {
                 itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
-                    //?} else {
+                    //?} else if >1.21 {
                     /*itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier) -> {
+                                            *///?} else {
+                    /*var i = itemStack.getAttributeModifiers(equipmentSlotGroup);
+                    i.forEach((holder, attributeModifier) -> {
                      *///?}
                     //? if >1.21.8
                     if (display != ItemAttributeModifiers.Display.hidden()) {
                         var player = Minecraft.getInstance().player;
-                        AtomicReference<Double> amount = new AtomicReference<>(attributeModifier.amount());
+                        var attributeModifierAmount = attributeModifier.
+                        //? if >1.21 {
+                        amount();
+                         //?} else {
+                        /*getAmount();
+                        *///?}
+
+                        AtomicReference<Double> amount = new AtomicReference<>(attributeModifierAmount);
                         if (player != null) {
-                            amount.set(switch (attributeModifier.operation()) {
-                                case ADD_VALUE -> attributeModifier.amount() + player.getAttributeBaseValue(holder);
-                                case ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL ->
-                                        attributeModifier.amount() * player.getAttributeBaseValue(holder);
+                            amount.set(switch (attributeModifier.
+                                    //? if >1.21 {
+                                    operation
+                                    //?} else {
+                                    /*getOperation
+                                    *///?}
+                                            ()) {
+                                case
+                                        //? if >1.21 {
+                                        ADD_VALUE
+                                        //?} else {
+                                        /*ADDITION
+                                        *///?}
+                                        -> attributeModifierAmount + player.getAttributeBaseValue(holder);
+                                case
+                                    //? if >1.21 {
+                                    ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL
+                                    //?} else {
+                                    /*MULTIPLY_BASE, MULTIPLY_TOTAL
+                                    *///?}
+                                         ->
+                                        attributeModifierAmount * player.getAttributeBaseValue(holder);
                             });
                         }
                         amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
+                        //? if >1.21 {
                         var icon = holder.unwrapKey().orElseThrow().location();
+                        //?} else {
+                        /*var icon = new ResourceLocation(holder.getDescriptionId().replace("attribute.name.", ""));
+                        *///?}
                         if (amount.get()!=0)
                             addIcon(icon, amount.get(), list, component, Component.translatable("item.modifiers."+equipmentSlotGroup.name().toLowerCase(Locale.ROOT)), ModHelpers.getColour(CONFIG.iconTooltips.attributeTooltipColor, ChatFormatting.DARK_GREEN));
                     //? if >1.21.8
@@ -163,6 +230,7 @@ public class InlineTooltips {
     }
 
     private static void addBeeTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
+        //? if >1.21 {
         if (itemStack.has(DataComponents.BEES) && CONFIG.iconTooltips.beesTooltip) {
             var bees = itemStack.get(DataComponents.BEES);
             if (bees == null) return;
@@ -171,6 +239,16 @@ public class InlineTooltips {
                     .bees()
                     .size(), list, component, null, ModHelpers.getColour(CONFIG.iconTooltips.beeTooltipColor, ChatFormatting.GOLD));
         }
+        //?} else {
+        /*CompoundTag tag = itemStack.getTag();
+        if (tag != null && tag.contains("BlockEntityTag")) {
+            CompoundTag blockEntityTag = tag.getCompound("BlockEntityTag");
+            if (blockEntityTag.contains("Bees")) {
+                ListTag bees = blockEntityTag.getList("Bees", Tag.TAG_COMPOUND);
+                addIcon(id("bees"), bees.size(), list, component, null, ModHelpers.getColour(CONFIG.iconTooltips.honeyTooltipColor, ChatFormatting.GOLD));
+            }
+        }
+        *///?}
     }
 
     private static void addFuelTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
@@ -204,10 +282,10 @@ public class InlineTooltips {
         int value = level.fuelValues().burnDuration(itemStack)
         //?} else if fabric {
         /*Integer value = AbstractFurnaceBlockEntity.getFuel().get(itemStack.getItem());
-         *///?} else {
+        *///?} else {
                                 /*int value = itemStack.getBurnTime(null
                                 //? if >1.21.8
-                                /^, level.fuelValues()^/
+                                , level.fuelValues()
                                 )
                                 *///?}
         ;
@@ -221,6 +299,7 @@ public class InlineTooltips {
     }
 
     private static void addHoneyTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
+        //? if >1.21 {
         if (CONFIG.iconTooltips.honeyTooltip && itemStack.has(DataComponents.BLOCK_STATE)) {
             var state = itemStack.get(DataComponents.BLOCK_STATE);
             if (state == null) return;
@@ -228,39 +307,52 @@ public class InlineTooltips {
             if (honey == null) return;
             addIcon(id("honey"), honey, list, component, null, ModHelpers.getColour(CONFIG.iconTooltips.honeyTooltipColor, ChatFormatting.GOLD));
         }
+        //?} else {
+        /*CompoundTag tag = itemStack.getTag();
+        if (tag != null && tag.contains("BlockStateTag")) {
+            CompoundTag blockEntityTag = tag.getCompound("BlockStateTag");
+            if (blockEntityTag.contains("honey_level")) {
+                var honey = blockEntityTag.getString("honey_level");
+                addIcon(id("honey"), Double.parseDouble(honey), list, component, null, ModHelpers.getColour(CONFIG.iconTooltips.honeyTooltipColor, ChatFormatting.GOLD));
+            }
+        }
+        *///?}
     }
 
     private static void addLightLevelTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
         if (CONFIG.iconTooltips.lightLevelTooltip) {
             if (itemStack.getItem() instanceof BlockItem blockItem) {
+                //? if >1.21 {
                 if (blockItem.getBlock() == Blocks.LIGHT) {
                     var stateComponent =  itemStack.get(DataComponents.BLOCK_STATE);
                     Integer light = stateComponent != null ? stateComponent.get(LightBlock.LEVEL) : null;
                     if (light != null && light != 0)
                         addIcon(id("light"), light, list, component, Component.translatable("item.modifiers.placed"), ModHelpers.getColour(CONFIG.iconTooltips.lightLevelTooltipColor, ChatFormatting.GOLD));
                 } else {
+                //?}
                     var state = blockItem.getBlock().defaultBlockState();
                     int light = state.getLightEmission();
                     if (light != 0)
                         addIcon(id("light"), light, list, component, Component.translatable("item.modifiers.placed"), ModHelpers.getColour(CONFIG.iconTooltips.lightLevelTooltipColor, ChatFormatting.GOLD));
+                //? if >1.21
                 }
             }
         }
     }
 
-    private static void addIcon(ResourceLocation attribute, double amount, List<Component> list, MutableComponent component, MutableComponent usedText, Integer attributeColor) {
+    private static void addIcon(ResourceLocation attribute, double amount, List<Component> list, MutableComponent component, MutableComponent usedText, ChatFormatting attributeColor) {
         if (ModHelpers.hasShiftDown() && usedText != null && !list.contains(usedText.withStyle(ChatFormatting.GRAY))) {
             list.add(Component.empty());
             list.add(usedText.withStyle(ChatFormatting.GRAY));
         }
 
         //? if >1.21.8 {
-        ResourceLocation icon = ResourceLocation.fromNamespaceAndPath(attribute.getNamespace(), "inline_tooltip_icons/"+ attribute.getPath());
+        ResourceLocation icon = id(attribute.getNamespace(), "inline_tooltip_icons/"+ attribute.getPath());
         MutableComponent iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, icon));
         //?} else {
-        /*ResourceLocation icon = ResourceLocation.fromNamespaceAndPath(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "")));
+        /*ResourceLocation icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "")));
         var style = InlineStyle.fromInlineData(new SpriteInlineData(new TextureSprite(icon)));;
-        MutableComponent iconComponent = Component.literal(".").setStyle(style);
+        MutableComponent iconComponent = Component.empty().append(Component.literal(".").setStyle(style));
         *///?}
 
         if (ModHelpers.hasAltDown() && InlineTooltips.CONFIG.developerOptions.debugInfo) {
@@ -268,13 +360,13 @@ public class InlineTooltips {
             iconComponent.append(Component.literal(" (%s)".formatted(attribute)));
             list.add(iconComponent);
         } else if (ModHelpers.hasShiftDown()) {
-            var key = attribute.toLanguageKey("tooltip");
+            var key = attribute.toLanguageKey("tooltip").replace("generic.", "");
             if (I18n.exists(key)) {
-                iconComponent.append(Component.translatable(key, ModHelpers.format(amount)).withColor(attributeColor));
+                iconComponent.append(Component.translatable(key, ModHelpers.format(amount)).withStyle(attributeColor));
             } else if (!InlineTooltips.CONFIG.developerOptions.debugInfo) {
-                iconComponent.append(Component.literal("%s %s".formatted(ModHelpers.format(amount), WordUtils.capitalizeFully(attribute.getPath().replace("_", " ")))).withColor(attributeColor));
+                iconComponent.append(Component.literal("%s %s".formatted(ModHelpers.format(amount), WordUtils.capitalizeFully(attribute.getPath().replace("_", " ")))).withStyle(attributeColor));
             } else {
-                iconComponent.append(Component.literal("%s %s".formatted(ModHelpers.format(amount), key)).withColor(attributeColor));
+                iconComponent.append(Component.literal("%s %s".formatted(ModHelpers.format(amount), key)).withStyle(attributeColor));
             }
             list.add(iconComponent);
         } else {
@@ -288,6 +380,14 @@ public class InlineTooltips {
     }
 
     public static ResourceLocation id(String id) {
+        return id(MOD_ID, id);
+    }
+
+    public static ResourceLocation id(String namespace, String id) {
+        //? if >1.21 {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, id);
+        //?} else {
+        /*return new ResourceLocation(namespace, id);
+        *///?}
     }
 }

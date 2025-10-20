@@ -28,11 +28,13 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+//? if >1.21
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import org.jetbrains.annotations.Nullable;
 
 public class SharpnessHelpers {
     public static double addSharpnessDamage(ItemStack stack, double original, @Nullable Player player, AttributeModifier modifier) {
+        //? if >1.21 {
         var enchantments = stack.getEnchantments();
         if (enchantments.isEmpty()) {
             return original;
@@ -57,6 +59,7 @@ public class SharpnessHelpers {
                 }
             }
         }
+        //?}
 
         return original;
     }

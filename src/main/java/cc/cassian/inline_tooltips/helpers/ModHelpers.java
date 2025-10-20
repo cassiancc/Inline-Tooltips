@@ -35,21 +35,21 @@ public class ModHelpers {
      * Used to check what colour the text should be.
      * Adapted from Item Descriptions.
      */
-    public static Integer getColour(String colour, ChatFormatting fallback) {
+    public static ChatFormatting getColour(String colour, ChatFormatting fallback) {
         String replacedColour = colour.toLowerCase().replace(" ", "_");
         return switch (replacedColour) {
             case "black", "dark_blue", "dark_green", "dark_red", "dark_purple",
                  "blue", "green", "aqua", "red", "yellow", "white" ->
-                    Objects.requireNonNullElse(ChatFormatting.getByName(colour), ChatFormatting.GRAY).getColor();
+                    Objects.requireNonNullElse(ChatFormatting.getByName(colour), ChatFormatting.GRAY);
             case "pink", "light_purple" ->
-                    Objects.requireNonNullElse(ChatFormatting.getByName("light_purple"), ChatFormatting.GRAY).getColor();
+                    Objects.requireNonNullElse(ChatFormatting.getByName("light_purple"), ChatFormatting.GRAY);
             case "dark_gray", "dark_grey" ->
-                    Objects.requireNonNullElse(ChatFormatting.getByName("dark_gray"), ChatFormatting.GRAY).getColor();
+                    Objects.requireNonNullElse(ChatFormatting.getByName("dark_gray"), ChatFormatting.GRAY);
             case "cyan", "dark_aqua" ->
-                    Objects.requireNonNullElse(ChatFormatting.getByName("dark_aqua"), ChatFormatting.GRAY).getColor();
+                    Objects.requireNonNullElse(ChatFormatting.getByName("dark_aqua"), ChatFormatting.GRAY);
             case "orange", "gold", "dark_yellow" ->
-                    Objects.requireNonNullElse(ChatFormatting.getByName("gold"), ChatFormatting.GRAY).getColor();
-            default -> fallback.getColor();
+                    Objects.requireNonNullElse(ChatFormatting.getByName("gold"), ChatFormatting.GRAY);
+            default -> fallback;
         };
     }
 

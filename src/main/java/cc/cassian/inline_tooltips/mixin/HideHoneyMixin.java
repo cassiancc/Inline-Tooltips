@@ -3,6 +3,7 @@ package cc.cassian.inline_tooltips.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Minecraft;
+//? if >1.21
 import net.minecraft.world.item.component.BlockItemStateProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,8 +12,11 @@ import java.util.function.Consumer;
 
 import static cc.cassian.inline_tooltips.InlineTooltips.CONFIG;
 
-
+//? if >1.21 {
 @Mixin(BlockItemStateProperties.class)
+//?} else {
+/*@Mixin(Minecraft.class)
+*///?}
 public class HideHoneyMixin {
     //? if >1.21.8 {
 	@WrapOperation(at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"), method = "addToTooltip")

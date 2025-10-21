@@ -43,7 +43,10 @@
   "tooltip.minecraft.waypoint_transmit_range": "%s Waypoint Transmit Range",
   "tooltip.minecraft.flying_speed": "%s Flying Speed",
   "tooltip.minecraft.follow_range": "%s Mob Follow Range",
+  "tooltip.inline_tooltips.food": "Restores %s Nutrition",
+  "tooltip.inline_tooltips.saturation": "Restores %s Saturation",
   "item.modifiers.placed": "When placed:",
-  "item.modifiers.furnace": "When used in a Furnace:"
+  "item.modifiers.furnace": "When used in a Furnace:",
+  "item.modifiers.eaten": "When eaten:"
 
 }

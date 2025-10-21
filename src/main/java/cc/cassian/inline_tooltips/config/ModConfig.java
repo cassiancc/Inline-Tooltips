@@ -22,6 +22,10 @@ public class ModConfig extends WrappedConfig {
         @Comment("Add tooltips based on light level.")
         public boolean lightLevelTooltip = true;
         public String lightLevelTooltipColor = "Gold";
+        public boolean foodTooltip = true;
+        public String foodTooltipColor = "Gold";
+        public boolean saturationTooltip = true;
+        public String saturationTooltipColor = "Gold";
     }
 
     public TextTooltips textTooltips = new TextTooltips();
@@ -60,6 +64,8 @@ public class ModConfig extends WrappedConfig {
     public static class DeveloperOptions implements Section {
         @Comment("Show debug information when holding Alt.")
         public boolean debugInfo = false;
+        @Comment("Food tooltip is hidden when AppleSkin is installed to prevent redundant information.")
+        public boolean showFoodTooltipWithAppleSkinInstalled = false;
     }
 
 

@@ -1,5 +1,6 @@
 package cc.cassian.inline_tooltips;
 
+import cc.cassian.inline_tooltips.compat.ModCompat;
 import cc.cassian.inline_tooltips.config.ModConfig;
 import cc.cassian.inline_tooltips.helpers.ModHelpers;
 import cc.cassian.inline_tooltips.helpers.SharpnessHelpers;
@@ -56,6 +57,7 @@ public class InlineTooltips {
         // Attribute Modifiers
         addAttributeTooltips(itemStack, list, component);
         addBeeTooltips(itemStack, list, component);
+        addFoodTooltips(itemStack, list, component);
         addFuelTooltips(itemStack, list, component);
         addHoneyTooltips(itemStack, list, component);
         addLightLevelTooltips(itemStack, list, component);
@@ -186,6 +188,17 @@ public class InlineTooltips {
         }
     }
 
+    private static void addFoodTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
+        if (itemStack.has(DataComponents.FOOD) && (!ModCompat.APPLE_SKIN || CONFIG.developerOptions.showFoodTooltipWithAppleSkinInstalled) && CONFIG.iconTooltips.foodTooltip) {
+            var foodProperties = itemStack.get(DataComponents.FOOD);
+            if (foodProperties == null) return;
+            if (CONFIG.iconTooltips.foodTooltip)
+                addIcon(id("food"), foodProperties.nutrition(), list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.foodTooltipColor, ChatFormatting.GOLD));
+            if (CONFIG.iconTooltips.saturationTooltip)
+                addIcon(id("saturation"), foodProperties.saturation(), list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.saturationTooltipColor, ChatFormatting.GOLD));
+        }
+    }
+
     private static double getFuelValue(Level level, ItemStack itemStack) {
         //? if >1.21.8 && fabric {
         int value = level.fuelValues().burnDuration(itemStack)
@@ -258,8 +271,10 @@ public class InlineTooltips {
             var key = attribute.toLanguageKey("tooltip");
             if (I18n.exists(key)) {
                 iconComponent.append(Component.translatable(key, ModHelpers.format(amount)).withColor(attributeColor));
-            } else {
+            } else if (!InlineTooltips.CONFIG.developerOptions.debugInfo) {
                 iconComponent.append(Component.literal("%s %s".formatted(ModHelpers.format(amount), WordUtils.capitalizeFully(attribute.getPath().replace("_", " ")))).withColor(attributeColor));
+            } else {
+                iconComponent.append(Component.literal("%s %s".formatted(ModHelpers.format(amount), key)).withColor(attributeColor));
             }
             list.add(iconComponent);
         } else {

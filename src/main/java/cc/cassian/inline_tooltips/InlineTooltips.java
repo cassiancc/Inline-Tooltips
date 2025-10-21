@@ -267,13 +267,33 @@ public class InlineTooltips {
     }
 
     private static void addFoodTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
-        if (itemStack.has(DataComponents.FOOD) && (!ModCompat.APPLE_SKIN || CONFIG.developerOptions.showFoodTooltipWithAppleSkinInstalled) && CONFIG.iconTooltips.foodTooltip) {
-            var foodProperties = itemStack.get(DataComponents.FOOD);
+        if (
+                //? if >1.21
+                itemStack.has(DataComponents.FOOD) &&
+                        (!ModCompat.APPLE_SKIN || CONFIG.developerOptions.showFoodTooltipWithAppleSkinInstalled) && CONFIG.iconTooltips.foodTooltip) {
+            var foodProperties =
+                    //? if >1.21 {
+                    itemStack.get(DataComponents.FOOD);
+                    //?} else {
+                    /*itemStack.getItem().getFoodProperties();
+                    *///?}
             if (foodProperties == null) return;
             if (CONFIG.iconTooltips.foodTooltip)
-                addIcon(id("food"), foodProperties.nutrition(), list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.foodTooltipColor, ChatFormatting.GOLD));
+                addIcon(id("food"), foodProperties.
+                        //? if >1.21 {
+                            nutrition()
+                        //?} else {
+                        /*getNutrition()
+                        *///?}
+                        , list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.foodTooltipColor, ChatFormatting.GOLD));
             if (CONFIG.iconTooltips.saturationTooltip)
-                addIcon(id("saturation"), foodProperties.saturation(), list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.saturationTooltipColor, ChatFormatting.GOLD));
+                addIcon(id("saturation"), foodProperties.
+                        //? if >1.21 {
+                                saturation()
+                        //?} else {
+                        /*getSaturationModifier()* foodProperties.getNutrition()*2
+                        *///?}
+                        , list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.saturationTooltipColor, ChatFormatting.GOLD));
         }
     }
 

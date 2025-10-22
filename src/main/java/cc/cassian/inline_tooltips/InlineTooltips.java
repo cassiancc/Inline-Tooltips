@@ -405,7 +405,7 @@ public class InlineTooltips {
 
     public static ResourceLocation id(String namespace, String id) {
         //? if >1.21 {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, id);
+        return ResourceLocation.fromNamespaceAndPath(namespace, id);
         //?} else {
         /*return new ResourceLocation(namespace, id);
         *///?}

@@ -57,7 +57,7 @@ public class InlineTooltips {
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	private static final ResourceLocation UNDEFINED = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/inline_tooltip_icons/empty.png");
+	private static final ResourceLocation UNDEFINED = id(MOD_ID, "textures/inline_tooltip_icons/empty.png");
 
 
     public static void addTooltips(ItemStack itemStack,

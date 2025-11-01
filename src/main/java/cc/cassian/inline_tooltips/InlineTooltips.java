@@ -191,7 +191,7 @@ public class InlineTooltips {
                         *///?}
 
                         AtomicReference<Double> amount = new AtomicReference<>(attributeModifierAmount);
-                        if (player != null) {
+                        if (player != null && player.getAttributes().hasAttribute(holder)) {
                             amount.set(switch (attributeModifier.
                                     //? if >1.21 {
                                     operation
@@ -372,7 +372,7 @@ public class InlineTooltips {
         ResourceLocation icon = id(attribute.getNamespace(), "inline_tooltip_icons/"+ attribute.getPath());
         MutableComponent iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, icon));
         //?} else {
-        /*ResourceLocation icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "")));
+        /*ResourceLocation icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "").replace("zombie.", "").replace("player.", "")));
         var style = InlineStyle.fromInlineData(new SpriteInlineData(new TextureSprite(icon)));;
         MutableComponent iconComponent = Component.empty().append(Component.literal(".").setStyle(style));
         *///?}
@@ -386,7 +386,7 @@ public class InlineTooltips {
             list.add(iconComponent);
         } else if (ModHelpers.hasShiftDown()) {
             iconComponent.append(expandedSpacing);
-            var key = attribute.toLanguageKey("tooltip").replace("generic.", "");
+            var key = attribute.toLanguageKey("tooltip").replace("generic.", "").replace("zombie.", "").replace("player.", "");
             if (I18n.exists(key)) {
                 iconComponent.append(Component.translatable(key, ModHelpers.format(amount)).withStyle(attributeColor));
             } else if (!InlineTooltips.CONFIG.developerOptions.debugInfo) {

@@ -57,6 +57,7 @@ public class InlineTooltips {
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	private static final ResourceLocation UNDEFINED = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/inline_tooltip_icons/empty.png");
 
 
     public static void addTooltips(ItemStack itemStack,
@@ -368,11 +369,20 @@ public class InlineTooltips {
             list.add(usedText.withStyle(ChatFormatting.GRAY));
         }
 
+        //? if <1.21.8
+        attribute = id(attribute.getNamespace(), attribute.getPath().replace("generic.", "").replace("zombie.", "").replace("player.", ""));
+
+        ResourceLocation icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath()));
+
+        var manager = Minecraft.getInstance().getResourceManager();
+        if (manager.getResource(icon).isEmpty()) {
+            icon = UNDEFINED;
+        }
+
         //? if >1.21.8 {
-        ResourceLocation icon = id(attribute.getNamespace(), "inline_tooltip_icons/"+ attribute.getPath());
         MutableComponent iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, icon));
         //?} else {
-        /*ResourceLocation icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "").replace("zombie.", "").replace("player.", "")));
+        /*
         var style = InlineStyle.fromInlineData(new SpriteInlineData(new TextureSprite(icon)));;
         MutableComponent iconComponent = Component.empty().append(Component.literal(".").setStyle(style));
         *///?}
@@ -386,7 +396,7 @@ public class InlineTooltips {
             list.add(iconComponent);
         } else if (ModHelpers.hasShiftDown()) {
             iconComponent.append(expandedSpacing);
-            var key = attribute.toLanguageKey("tooltip").replace("generic.", "").replace("zombie.", "").replace("player.", "");
+            var key = attribute.toLanguageKey("tooltip");
             if (I18n.exists(key)) {
                 iconComponent.append(Component.translatable(key, ModHelpers.format(amount)).withStyle(attributeColor));
             } else if (!InlineTooltips.CONFIG.developerOptions.debugInfo) {

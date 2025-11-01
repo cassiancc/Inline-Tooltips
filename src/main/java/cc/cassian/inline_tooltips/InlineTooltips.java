@@ -16,22 +16,23 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-
+//? if <1.21 {
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+//?}
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-//? if >1.21.8
+//? if >1.21.8 {
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
+//?}
 import net.minecraft.resources.ResourceLocation;
 //? if >1.21 {
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 //?}
-
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeehiveBlock;
@@ -107,11 +108,12 @@ public class InlineTooltips {
             var pos = player.blockPosition();
             addCoordinates(pos, list, "position", ModHelpers.getColour(CONFIG.textTooltips.compassTooltipColor, ChatFormatting.RED));
         }
-        if (CONFIG.textTooltips.durabilityTooltip && !tooltipFlag.isAdvanced() && itemStack.isDamaged()
-                //? if >1.21
-                && itemStack.has(DataComponents.DAMAGE)
+        if (CONFIG.durabilityTooltip.enable && !tooltipFlag.isAdvanced() && (CONFIG.durabilityTooltip.always_show || itemStack.isDamaged()) && itemStack.isDamageableItem()
+                //? if >1.21 {
+                && (itemStack.has(DataComponents.DAMAGE) || CONFIG.durabilityTooltip.always_show)
+                //?}
         ) {
-            list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ModHelpers.getColour(CONFIG.textTooltips.durabilityTooltipColor, ChatFormatting.GRAY)));
+            list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ModHelpers.getColour(CONFIG.durabilityTooltip.text_color, ChatFormatting.GRAY)));
         }
         if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK) && player != null) {
             list.add(Component.literal(getTime(Minecraft.getInstance().level.getDayTime())).withStyle(ModHelpers.getColour(CONFIG.clockTooltip.text_color, ChatFormatting.GOLD)));
@@ -375,11 +377,15 @@ public class InlineTooltips {
         MutableComponent iconComponent = Component.empty().append(Component.literal(".").setStyle(style));
         *///?}
 
+        String spacing = new String(new char[CONFIG.general.spacing]).replace("\0", " ");
+        String expandedSpacing = new String(new char[CONFIG.general.expandedSpacing]).replace("\0", " ");
+
         if (ModHelpers.hasAltDown() && InlineTooltips.CONFIG.developerOptions.debugInfo) {
             iconComponent.append(ModHelpers.format(amount) + " ");
             iconComponent.append(Component.literal(" (%s)".formatted(attribute)));
             list.add(iconComponent);
         } else if (ModHelpers.hasShiftDown()) {
+            iconComponent.append(expandedSpacing);
             var key = attribute.toLanguageKey("tooltip").replace("generic.", "");
             if (I18n.exists(key)) {
                 iconComponent.append(Component.translatable(key, ModHelpers.format(amount)).withStyle(attributeColor));
@@ -390,7 +396,7 @@ public class InlineTooltips {
             }
             list.add(iconComponent);
         } else {
-            iconComponent.append(ModHelpers.format(amount) + " ");
+            iconComponent.append(ModHelpers.format(amount) + spacing);
             component.append(iconComponent);
         }
     }

@@ -6,6 +6,8 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Objects;
 
+import static cc.cassian.inline_tooltips.InlineTooltips.CONFIG;
+
 public class ModHelpers {
     public static String format(double amount) {
         String format = String.format("%1.1f", amount);
@@ -16,6 +18,7 @@ public class ModHelpers {
     }
 
     public static boolean hasShiftDown() {
+        if (CONFIG.general.alwaysExpanded) return true;
         //? if >1.21.8 {
         return Minecraft.getInstance().hasShiftDown();
         //?} else {

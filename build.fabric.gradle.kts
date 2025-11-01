@@ -100,7 +100,7 @@ dependencies {
 
 tasks {
     processResources {
-        exclude("**/neoforge.mods.toml", "**/mods.toml")
+        exclude("**/neoforge.mods.toml")
     }
 
     register<Copy>("buildAndCollect") {

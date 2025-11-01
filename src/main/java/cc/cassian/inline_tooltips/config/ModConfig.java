@@ -5,6 +5,17 @@ import folk.sisby.kaleido.lib.quiltconfig.api.annotations.Comment;
 
 public class ModConfig extends WrappedConfig {
 
+    public General general = new General();
+    public static class General implements Section {
+
+        @Comment("Always show full tooltip details without holding Shift.")
+        public boolean alwaysExpanded = false;
+        @Comment("Amount of space characters between icons.")
+        public int spacing = 1;
+        @Comment("Amount of space characters between icons when the tooltip is expanded.")
+        public int expandedSpacing = 1;
+    }
+
     public IconTooltips iconTooltips = new IconTooltips();
     public static class IconTooltips implements Section {
         @Comment("Add tooltips based on item attributes.")
@@ -28,11 +39,18 @@ public class ModConfig extends WrappedConfig {
         public String saturationTooltipColor = "Gold";
     }
 
+    public DurabilityTooltip durabilityTooltip = new DurabilityTooltip();
+    public static class DurabilityTooltip implements Section {
+        @Comment("Add tooltips based on durability.")
+        public boolean enable = true;
+        @Comment("Color of the durability tooltip.")
+        public String text_color = "Gray";
+        @Comment("Always show durability tooltip.")
+        public boolean always_show = false;
+    }
+
     public TextTooltips textTooltips = new TextTooltips();
     public static class TextTooltips implements Section {
-        @Comment("Add tooltips based on durability.")
-        public boolean durabilityTooltip = true;
-        public String durabilityTooltipColor = "Gray";
         @Comment("Add tooltips to Compasses with the player's coordinates.")
         public boolean compassTooltip = true;
         @Comment("Compass tooltip colour.")

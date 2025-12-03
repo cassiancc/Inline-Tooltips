@@ -17,11 +17,11 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 //? if <1.21 {
-import net.minecraft.world.entity.EquipmentSlot;
+/*import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-//?}
+*///?}
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 //? if >1.21.8 {
@@ -369,20 +369,11 @@ public class InlineTooltips {
             list.add(usedText.withStyle(ChatFormatting.GRAY));
         }
 
-        //? if <1.21.8
-        attribute = id(attribute.getNamespace(), attribute.getPath().replace("generic.", "").replace("zombie.", "").replace("player.", ""));
-
-        ResourceLocation icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath()));
-
-        var manager = Minecraft.getInstance().getResourceManager();
-        if (manager.getResource(icon).isEmpty()) {
-            icon = UNDEFINED;
-        }
-
         //? if >1.21.8 {
+        ResourceLocation icon = id(attribute.getNamespace(), "inline_tooltip_icons/"+ attribute.getPath());
         MutableComponent iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, icon));
         //?} else {
-        /*
+        /*ResourceLocation icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "")));
         var style = InlineStyle.fromInlineData(new SpriteInlineData(new TextureSprite(icon)));;
         MutableComponent iconComponent = Component.empty().append(Component.literal(".").setStyle(style));
         *///?}
@@ -392,7 +383,7 @@ public class InlineTooltips {
 
         if (ModHelpers.hasAltDown() && InlineTooltips.CONFIG.developerOptions.debugInfo) {
             iconComponent.append(ModHelpers.format(amount) + " ");
-            iconComponent.append(Component.literal(" (%s)".formatted(attribute)));
+            iconComponent.append(Component.literal(" (%s | %s)".formatted(attribute, icon)));
             list.add(iconComponent);
         } else if (ModHelpers.hasShiftDown()) {
             iconComponent.append(expandedSpacing);

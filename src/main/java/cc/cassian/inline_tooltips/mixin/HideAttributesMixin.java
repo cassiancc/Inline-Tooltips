@@ -25,7 +25,6 @@ import static cc.cassian.inline_tooltips.InlineTooltips.CONFIG;
 @Mixin(ItemStack.class)
 public class HideAttributesMixin {
     //? if fabric {
-    //? if >1.21 {
 	@WrapOperation(at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;isTrue()Z"), method = "method_57370")
 	private static boolean init(MutableBoolean instance, Operation<Boolean> original, @Local Consumer<Component> consumer, @Local AttributeModifier attributeModifier) {
         // Disable default tooltip
@@ -34,16 +33,6 @@ public class HideAttributesMixin {
         }
         return false;
     }
-    //?} else {
-    /*@WrapOperation(at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Multimap;isEmpty()Z"), method = "getTooltipLines")
-    private static boolean init(Multimap instance, Operation<Boolean> original) {
-        // Disable default tooltip
-        if (!CONFIG.iconTooltips.attributeTooltips) {
-            return original.call(instance);
-        }
-        return true;
-    }
-    *///?}
 
     //? if >1.21.8 {
     @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/component/ItemAttributeModifiers$Display;apply(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/Holder;Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;)V"), method = "method_57370")
@@ -53,7 +42,7 @@ public class HideAttributesMixin {
             original.call(instance, consumer, player, attributeHolder, attributeModifier);
         }
     }
-    //?} else if >1.21 {
+    //?} else {
     /*@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;addModifierTooltip(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/Holder;Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;)V"), method = "method_57370")
     private static void removeAttribute(ItemStack instance, Consumer consumer, Player player, Holder holder, AttributeModifier attributeModifier, Operation<Void> original) {
         // Enable our tooltip
@@ -62,7 +51,6 @@ public class HideAttributesMixin {
         }
     }
     *///?}
-    //FIXME 1.20.1 CASE
 
 
     //?} else if neoforge && >1.21.8 {

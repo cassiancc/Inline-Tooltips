@@ -28,11 +28,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 //?}
 import net.minecraft.resources.ResourceLocation;
-//? if >1.21 {
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-//?}
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeehiveBlock;
@@ -78,20 +76,11 @@ public class InlineTooltips {
         if (!component.equals(Component.empty()))
             list.add(component);
         // Add text tooltips
-        if (CONFIG.textTooltips.lodestoneTooltip &&
-                //? if >1.21 {
-                 itemStack.has(DataComponents.LODESTONE_TRACKER)
-                //?} else {
-                /*CompassItem.isLodestoneCompass(itemStack)
-                *///?}
+        if (CONFIG.textTooltips.lodestoneTooltip && itemStack.has(DataComponents.LODESTONE_TRACKER)
         ) {
-            //? if >1.21 {
             var state = itemStack.get(DataComponents.LODESTONE_TRACKER);
             if (state == null || state.target().isEmpty()) return;
             var pos = state.target().get();
-            //?} else {
-            /*var pos = CompassItem.getLodestonePosition(itemStack.getTag());
-            *///?}
             addCoordinates(pos, list, "target", ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD));
         }
         if (CONFIG.textTooltips.recoveryCompassTooltip && itemStack.is(Items.RECOVERY_COMPASS) && player != null) {
@@ -100,19 +89,12 @@ public class InlineTooltips {
             addCoordinates(lastDeath.get(), list, "target", ModHelpers.getColour(CONFIG.textTooltips.recoveryCompassTooltipColor, ChatFormatting.AQUA));
         }
         if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !
-                //? if >1.21 {
                 itemStack.has(DataComponents.LODESTONE_TRACKER)
-                //?} else {
-                /*CompassItem.isLodestoneCompass(itemStack)
-                *///?}
                 && player != null) {
             var pos = player.blockPosition();
             addCoordinates(pos, list, "position", ModHelpers.getColour(CONFIG.textTooltips.compassTooltipColor, ChatFormatting.RED));
         }
-        if (CONFIG.durabilityTooltip.enable && !tooltipFlag.isAdvanced() && (CONFIG.durabilityTooltip.always_show || itemStack.isDamaged()) && itemStack.isDamageableItem()
-                //? if >1.21 {
-                && (itemStack.has(DataComponents.DAMAGE) || CONFIG.durabilityTooltip.always_show)
-                //?}
+        if (CONFIG.durabilityTooltip.enable && !tooltipFlag.isAdvanced() && (CONFIG.durabilityTooltip.always_show || itemStack.isDamaged()) && itemStack.isDamageableItem() && (itemStack.has(DataComponents.DAMAGE) || CONFIG.durabilityTooltip.always_show)
         ) {
             list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ModHelpers.getColour(CONFIG.durabilityTooltip.text_color, ChatFormatting.GRAY)));
         }
@@ -168,61 +150,27 @@ public class InlineTooltips {
 
     private static void addAttributeTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
         if (CONFIG.iconTooltips.attributeTooltips) {
-            //? if >1.21 {
             for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
-            //?} else {
-            /*for (EquipmentSlot equipmentSlotGroup : EquipmentSlot.values()) {
-            *///?}
                 //? if >1.21.8 {
                 itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
-                    //?} else if >1.21 {
+                    //?} else {
                     /*itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier) -> {
-                                            *///?} else {
-                    /*var i = itemStack.getAttributeModifiers(equipmentSlotGroup);
-                    i.forEach((holder, attributeModifier) -> {
-                     *///?}
+                    *///?}
                     //? if >1.21.8
                     if (display != ItemAttributeModifiers.Display.hidden()) {
                         var player = Minecraft.getInstance().player;
                         var attributeModifierAmount = attributeModifier.
-                        //? if >1.21 {
                         amount();
-                         //?} else {
-                        /*getAmount();
-                        *///?}
 
                         AtomicReference<Double> amount = new AtomicReference<>(attributeModifierAmount);
                         if (player != null && player.getAttributes().hasAttribute(holder)) {
-                            amount.set(switch (attributeModifier.
-                                    //? if >1.21 {
-                                    operation
-                                    //?} else {
-                                    /*getOperation
-                                    *///?}
-                                            ()) {
-                                case
-                                        //? if >1.21 {
-                                        ADD_VALUE
-                                        //?} else {
-                                        /*ADDITION
-                                        *///?}
-                                        -> attributeModifierAmount + player.getAttributeBaseValue(holder);
-                                case
-                                    //? if >1.21 {
-                                    ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL
-                                    //?} else {
-                                    /*MULTIPLY_BASE, MULTIPLY_TOTAL
-                                    *///?}
-                                         ->
-                                        attributeModifierAmount * player.getAttributeBaseValue(holder);
+                            amount.set(switch (attributeModifier.operation()) {
+                                case ADD_VALUE -> attributeModifierAmount + player.getAttributeBaseValue(holder);
+                                case ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL -> attributeModifierAmount * player.getAttributeBaseValue(holder);
                             });
                         }
                         amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
-                        //? if >1.21 {
                         var icon = holder.unwrapKey().orElseThrow().location();
-                        //?} else {
-                        /*var icon = new ResourceLocation(holder.getDescriptionId().replace("attribute.name.", ""));
-                        *///?}
                         if (amount.get()!=0)
                             addIcon(icon, amount.get(), list, component, Component.translatable("item.modifiers."+equipmentSlotGroup.name().toLowerCase(Locale.ROOT)), ModHelpers.getColour(CONFIG.iconTooltips.attributeTooltipColor, ChatFormatting.DARK_GREEN));
                     //? if >1.21.8
@@ -233,7 +181,6 @@ public class InlineTooltips {
     }
 
     private static void addBeeTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
-        //? if >1.21 {
         if (itemStack.has(DataComponents.BEES) && CONFIG.iconTooltips.beesTooltip) {
             var bees = itemStack.get(DataComponents.BEES);
             if (bees == null) return;
@@ -242,16 +189,6 @@ public class InlineTooltips {
                     .bees()
                     .size(), list, component, null, ModHelpers.getColour(CONFIG.iconTooltips.beeTooltipColor, ChatFormatting.GOLD));
         }
-        //?} else {
-        /*CompoundTag tag = itemStack.getTag();
-        if (tag != null && tag.contains("BlockEntityTag")) {
-            CompoundTag blockEntityTag = tag.getCompound("BlockEntityTag");
-            if (blockEntityTag.contains("Bees")) {
-                ListTag bees = blockEntityTag.getList("Bees", Tag.TAG_COMPOUND);
-                addIcon(id("bees"), bees.size(), list, component, null, ModHelpers.getColour(CONFIG.iconTooltips.honeyTooltipColor, ChatFormatting.GOLD));
-            }
-        }
-        *///?}
     }
 
     private static void addFuelTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
@@ -260,9 +197,9 @@ public class InlineTooltips {
             if (level != null &&
                     //? if >1.21.8 {
                     level.fuelValues()
-                            //?} else {
-                            /*AbstractFurnaceBlockEntity
-                             *///?}
+                    //?} else {
+                    /*AbstractFurnaceBlockEntity
+                     *///?}
                             .isFuel(itemStack)) {
                 addIcon(id("fuel"), getFuelValue(level, itemStack) /200f, list, component, Component.translatable("item.modifiers.furnace"), ModHelpers.getColour(CONFIG.iconTooltips.fuelTooltipColor, ChatFormatting.GOLD));
             }
@@ -270,33 +207,13 @@ public class InlineTooltips {
     }
 
     private static void addFoodTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
-        if (
-                //? if >1.21
-                itemStack.has(DataComponents.FOOD) &&
-                        (!ModCompat.APPLE_SKIN || CONFIG.developerOptions.showFoodTooltipWithAppleSkinInstalled) && CONFIG.iconTooltips.foodTooltip) {
-            var foodProperties =
-                    //? if >1.21 {
-                    itemStack.get(DataComponents.FOOD);
-                    //?} else {
-                    /*itemStack.getItem().getFoodProperties();
-                    *///?}
+        if (itemStack.has(DataComponents.FOOD) && (!ModCompat.APPLE_SKIN || CONFIG.developerOptions.showFoodTooltipWithAppleSkinInstalled) && CONFIG.iconTooltips.foodTooltip) {
+            var foodProperties = itemStack.get(DataComponents.FOOD);
             if (foodProperties == null) return;
             if (CONFIG.iconTooltips.foodTooltip)
-                addIcon(id("food"), foodProperties.
-                        //? if >1.21 {
-                            nutrition()
-                        //?} else {
-                        /*getNutrition()
-                        *///?}
-                        , list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.foodTooltipColor, ChatFormatting.GOLD));
+                addIcon(id("food"), foodProperties.nutrition(), list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.foodTooltipColor, ChatFormatting.GOLD));
             if (CONFIG.iconTooltips.saturationTooltip)
-                addIcon(id("saturation"), foodProperties.
-                        //? if >1.21 {
-                                saturation()
-                        //?} else {
-                        /*getSaturationModifier()* foodProperties.getNutrition()*2
-                        *///?}
-                        , list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.saturationTooltipColor, ChatFormatting.GOLD));
+                addIcon(id("saturation"), foodProperties.saturation(), list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.saturationTooltipColor, ChatFormatting.GOLD));
         }
     }
 
@@ -322,7 +239,6 @@ public class InlineTooltips {
     }
 
     private static void addHoneyTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
-        //? if >1.21 {
         if (CONFIG.iconTooltips.honeyTooltip && itemStack.has(DataComponents.BLOCK_STATE)) {
             var state = itemStack.get(DataComponents.BLOCK_STATE);
             if (state == null) return;
@@ -330,34 +246,21 @@ public class InlineTooltips {
             if (honey == null) return;
             addIcon(id("honey"), honey, list, component, null, ModHelpers.getColour(CONFIG.iconTooltips.honeyTooltipColor, ChatFormatting.GOLD));
         }
-        //?} else {
-        /*CompoundTag tag = itemStack.getTag();
-        if (tag != null && tag.contains("BlockStateTag")) {
-            CompoundTag blockEntityTag = tag.getCompound("BlockStateTag");
-            if (blockEntityTag.contains("honey_level")) {
-                var honey = blockEntityTag.getString("honey_level");
-                addIcon(id("honey"), Double.parseDouble(honey), list, component, null, ModHelpers.getColour(CONFIG.iconTooltips.honeyTooltipColor, ChatFormatting.GOLD));
-            }
-        }
-        *///?}
     }
 
     private static void addLightLevelTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
         if (CONFIG.iconTooltips.lightLevelTooltip) {
             if (itemStack.getItem() instanceof BlockItem blockItem) {
-                //? if >1.21 {
                 if (blockItem.getBlock() == Blocks.LIGHT) {
                     var stateComponent =  itemStack.get(DataComponents.BLOCK_STATE);
                     Integer light = stateComponent != null ? stateComponent.get(LightBlock.LEVEL) : null;
                     if (light != null && light != 0)
                         addIcon(id("light"), light, list, component, Component.translatable("item.modifiers.placed"), ModHelpers.getColour(CONFIG.iconTooltips.lightLevelTooltipColor, ChatFormatting.GOLD));
                 } else {
-                //?}
                     var state = blockItem.getBlock().defaultBlockState();
                     int light = state.getLightEmission();
                     if (light != 0)
                         addIcon(id("light"), light, list, component, Component.translatable("item.modifiers.placed"), ModHelpers.getColour(CONFIG.iconTooltips.lightLevelTooltipColor, ChatFormatting.GOLD));
-                //? if >1.21
                 }
             }
         }
@@ -373,7 +276,7 @@ public class InlineTooltips {
         ResourceLocation icon = id(attribute.getNamespace(), "inline_tooltip_icons/"+ attribute.getPath());
         MutableComponent iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, icon));
         //?} else {
-        /*ResourceLocation icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "")));
+        /*ResourceLocation icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "").replace("zombie.", "")));
         var style = InlineStyle.fromInlineData(new SpriteInlineData(new TextureSprite(icon)));;
         MutableComponent iconComponent = Component.empty().append(Component.literal(".").setStyle(style));
         *///?}

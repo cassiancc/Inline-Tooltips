@@ -1,6 +1,6 @@
 package cc.cassian.inline_tooltips.fabric;
 
-//? fabric {
+//? fabric || unobf {
 import cc.cassian.inline_tooltips.Platform;
 import net.fabricmc.loader.api.FabricLoader;
 

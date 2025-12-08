@@ -123,6 +123,13 @@ dependencies {
     for (it in modules) modImplementation(fabricApi.module("fabric-$it", property("deps.fabric-api") as String))
 }
 
+stonecutter {
+    replacements.string {
+        direction = eval(current.version, ">1.21.10")
+        replace("ResourceLocation", "Identifier")
+    }
+}
+
 tasks {
     processResources {
         exclude("**/neoforge.mods.toml")

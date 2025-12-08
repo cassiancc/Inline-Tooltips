@@ -1,6 +1,6 @@
 package cc.cassian.inline_tooltips;
 
-//? fabric {
+//? fabric || unobf {
 import cc.cassian.inline_tooltips.fabric.FabricPlatformImpl;
 //?}
 import java.nio.file.Path;
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 
 public interface Platform {
 
-    //? fabric {
+    //? fabric || unobf {
     Platform INSTANCE = new FabricPlatformImpl();
     //?}
     //? neoforge {

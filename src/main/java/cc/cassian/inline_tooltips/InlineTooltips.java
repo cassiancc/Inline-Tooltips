@@ -107,7 +107,19 @@ public class InlineTooltips {
         addCoordinates(globalPos.pos(), list, target, colour);
         list.add(
                 Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
-                Component.translatableWithFallback(globalPos.dimension().location().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().location().getPath())).withStyle(colour))
+                Component.translatableWithFallback(globalPos.dimension()
+                        //? if >1.21.10 {
+                        /*.identifier()
+                        *///?} else {
+                        .location()
+                        //?}
+                        .toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension()
+                        //? if >1.21.10 {
+                        /*.identifier()
+                        *///?} else {
+                        .location()
+                        //?}
+                        .getPath())).withStyle(colour))
         );
     }
 
@@ -170,7 +182,13 @@ public class InlineTooltips {
                             });
                         }
                         amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
-                        var icon = holder.unwrapKey().orElseThrow().location();
+                        var icon = holder.unwrapKey().orElseThrow()
+                                //? if >1.21.10 {
+                                /*.identifier()
+                                *///?} else {
+                                .location()
+                                //?}
+                                ;
                         if (amount.get()!=0)
                             addIcon(icon, amount.get(), list, component, Component.translatable("item.modifiers."+equipmentSlotGroup.name().toLowerCase(Locale.ROOT)), ModHelpers.getColour(CONFIG.iconTooltips.attributeTooltipColor, ChatFormatting.DARK_GREEN));
                     //? if >1.21.8
@@ -218,7 +236,7 @@ public class InlineTooltips {
     }
 
     private static double getFuelValue(Level level, ItemStack itemStack) {
-        //? if >1.21.8 && fabric {
+        //? if >1.21.8 && (fabric || unobf) {
         int value = level.fuelValues().burnDuration(itemStack)
         //?} else if fabric {
         /*Integer value = AbstractFurnaceBlockEntity.getFuel().get(itemStack.getItem());

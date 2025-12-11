@@ -1,2 +1,2 @@
 ### Fixed
-- Mipmapping issues
+- Duplicated attributes on NeoForge.

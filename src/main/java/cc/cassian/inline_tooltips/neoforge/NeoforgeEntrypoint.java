@@ -9,10 +9,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 //? if >1.21.8 {
-/^import net.neoforged.neoforge.event.GatherSkippedAttributeTooltipsEvent;
-^///?} else {
-import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
-//?}
+import net.neoforged.neoforge.event.GatherSkippedAttributeTooltipsEvent;
+//?} else {
+/^import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
+^///?}
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import static cc.cassian.inline_tooltips.InlineTooltips.CONFIG;
@@ -32,7 +32,7 @@ public class NeoforgeEntrypoint {
 
     @SubscribeEvent
     public static void hideBuiltInAttributeTooltip(GatherSkippedAttributeTooltipsEvent event) {
-        if (!ModHelpers.hasShiftDown() && CONFIG.iconTooltips.attributeTooltips) {
+        if (CONFIG.iconTooltips.attributeTooltips) {
             event.setSkipAll(true);
         }
     }

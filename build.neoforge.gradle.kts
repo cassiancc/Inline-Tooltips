@@ -114,12 +114,9 @@ dependencies {
     // YACL
     if (hasProperty("deps.yacl")) {
         implementation("dev.isxander:yet-another-config-lib:${property("deps.yacl")}-neoforge")
-    } else {
-        compileOnly("dev.isxander:yet-another-config-lib:3.7.1+1.21.6-neoforge")
+        // mcqoy
+        implementation("maven.modrinth:mcqoy:yHGo6VsD")
     }
-
-    // mcqoy
-    implementation("maven.modrinth:mcqoy:yHGo6VsD")
 
     // Cloth Config
     if (hasProperty("deps.cloth_config")) {

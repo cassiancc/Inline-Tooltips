@@ -76,6 +76,13 @@ repositories {
             includeGroupAndSubgroups("com.terraformersmc")
         }
     }
+    maven {
+        name = "Gegy"
+        url = uri("https://maven.gegy.dev/releases/")
+        content {
+            includeGroupAndSubgroups("dev.lambdaurora")
+        }
+    }
 }
 
 dependencies {

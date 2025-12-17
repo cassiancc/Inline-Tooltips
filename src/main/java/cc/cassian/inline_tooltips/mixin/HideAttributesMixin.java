@@ -24,7 +24,7 @@ import static cc.cassian.inline_tooltips.InlineTooltips.CONFIG;
 
 @Mixin(ItemStack.class)
 public class HideAttributesMixin {
-    //? if unobf {
+    //? if >26 {
     /*@WrapOperation(at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;isTrue()Z"), method = "lambda$addAttributeTooltips$17")
     private static boolean init(MutableBoolean instance, Operation<Boolean> original, @Local Consumer<Component> consumer, @Local AttributeModifier attributeModifier) {
         // Disable default tooltip

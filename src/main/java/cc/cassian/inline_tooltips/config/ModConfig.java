@@ -2,18 +2,23 @@ package cc.cassian.inline_tooltips.config;
 
 import folk.sisby.kaleido.api.WrappedConfig;
 import folk.sisby.kaleido.lib.quiltconfig.api.annotations.Comment;
+import folk.sisby.kaleido.lib.quiltconfig.api.annotations.DisplayName;
 
 public class ModConfig extends WrappedConfig {
 
     public General general = new General();
     public static class General implements Section {
 
+        @Comment("Never show full tooltip details, even when holding Shift.")
+        public boolean neverExpanded = false;
         @Comment("Always show full tooltip details without holding Shift.")
         public boolean alwaysExpanded = false;
         @Comment("Amount of space characters between icons.")
         public int spacing = 1;
         @Comment("Amount of space characters between icons when the tooltip is expanded.")
         public int expandedSpacing = 1;
+        @Comment("Change attribute tooltips in the 'inline_tooltips:shows_percentage' attribute tag to percentages.")
+        public boolean checkPercentageTag = true;
     }
 
     public IconTooltips iconTooltips = new IconTooltips();
@@ -83,6 +88,7 @@ public class ModConfig extends WrappedConfig {
         @Comment("Show debug information when holding Alt.")
         public boolean debugInfo = false;
         @Comment("Food tooltip is hidden when AppleSkin is installed to prevent redundant information.")
+        @DisplayName("Show Food Tooltip with AppleSkin installed")
         public boolean showFoodTooltipWithAppleSkinInstalled = false;
     }
 

@@ -4,7 +4,7 @@ import cc.cassian.inline_tooltips.compat.ModCompat;
 import cc.cassian.inline_tooltips.config.ModConfig;
 import cc.cassian.inline_tooltips.helpers.ModHelpers;
 import cc.cassian.inline_tooltips.helpers.SharpnessHelpers;
-//? if =1.21.1 || 1.20.1 {
+//? if =1.21.1 {
 /*import com.samsthenerd.inline.api.InlineAPI;
 import com.samsthenerd.inline.api.InlineData;
 import com.samsthenerd.inline.api.data.SpriteInlineData;
@@ -16,17 +16,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-//? if <1.21 {
-/*import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-*///?}
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 //? if >1.21.8 {
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
-//?}
+//?} else {
+/*import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+*///?}
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -34,9 +30,6 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeehiveBlock;
-//? if <1.21.8 {
-/*import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-*///?}
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightBlock;
 import org.apache.commons.lang3.text.WordUtils;
@@ -163,11 +156,11 @@ public class InlineTooltips {
     private static void addAttributeTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
         if (CONFIG.iconTooltips.attributeTooltips) {
             for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
-                //? if >1.21.8 {
-                itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier, display) -> {
-                    //?} else {
-                    /*itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier) -> {
-                    *///?}
+                itemStack.forEachModifier(equipmentSlotGroup, (holder, attributeModifier
+                    //? if >1.21.8 {
+                    , display
+                    //?}
+                ) -> {
                     //? if >1.21.8
                     if (display != ItemAttributeModifiers.Display.hidden()) {
                         var player = Minecraft.getInstance().player;
@@ -190,7 +183,7 @@ public class InlineTooltips {
                                 //?}
                                 ;
                         if (amount.get()!=0)
-                            addIcon(icon, amount.get(), list, component, Component.translatable("item.modifiers."+equipmentSlotGroup.name().toLowerCase(Locale.ROOT)), ModHelpers.getColour(CONFIG.iconTooltips.attributeTooltipColor, ChatFormatting.DARK_GREEN));
+                            addIcon(icon, ModHelpers.format(amount.get(), holder), list, component, Component.translatable("item.modifiers."+equipmentSlotGroup.name().toLowerCase(Locale.ROOT)), ModHelpers.getColour(CONFIG.iconTooltips.attributeTooltipColor, ChatFormatting.DARK_GREEN));
                     //? if >1.21.8
                     }
                 });
@@ -236,24 +229,23 @@ public class InlineTooltips {
     }
 
     private static double getFuelValue(Level level, ItemStack itemStack) {
-        //? if >1.21.8 && (fabric || unobf) {
+        //? if >1.21.8 && fabric {
         int value = level.fuelValues().burnDuration(itemStack)
         //?} else if fabric {
         /*Integer value = AbstractFurnaceBlockEntity.getFuel().get(itemStack.getItem());
         *///?} else {
-                                /*int value = itemStack.getBurnTime(null
-                                //? if >1.21.8
-                                , level.fuelValues()
-                                )
-                                *///?}
+            /*int value = itemStack.getBurnTime(null
+            //? if >1.21.8
+            , level.fuelValues()
+            )
+            *///?}
         ;
         //? if =1.21.1 && fabric {
-        /*if (value != null)
-        *///?}
+        /*if (value != null) {
             return value;
-        //? if =1.21.1 && fabric {
-        /*return 0;
-        *///?}
+        } else return 0;
+        *///?} else
+        return value;
     }
 
     private static void addHoneyTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
@@ -285,6 +277,10 @@ public class InlineTooltips {
     }
 
     private static void addIcon(ResourceLocation attribute, double amount, List<Component> list, MutableComponent component, MutableComponent usedText, ChatFormatting attributeColor) {
+        addIcon(attribute, ModHelpers.format(amount), list, component, usedText, attributeColor);
+    }
+
+    private static void addIcon(ResourceLocation attribute, String amount, List<Component> list, MutableComponent component, MutableComponent usedText, ChatFormatting attributeColor) {
         if (ModHelpers.hasShiftDown() && usedText != null && !list.contains(usedText.withStyle(ChatFormatting.GRAY))) {
             list.add(Component.empty());
             list.add(usedText.withStyle(ChatFormatting.GRAY));
@@ -303,22 +299,22 @@ public class InlineTooltips {
         String expandedSpacing = new String(new char[CONFIG.general.expandedSpacing]).replace("\0", " ");
 
         if (ModHelpers.hasAltDown() && InlineTooltips.CONFIG.developerOptions.debugInfo) {
-            iconComponent.append(ModHelpers.format(amount) + " ");
+            iconComponent.append(amount + " ");
             iconComponent.append(Component.literal(" (%s | %s)".formatted(attribute, icon)));
             list.add(iconComponent);
         } else if (ModHelpers.hasShiftDown()) {
             iconComponent.append(expandedSpacing);
             var key = attribute.toLanguageKey("tooltip");
             if (I18n.exists(key)) {
-                iconComponent.append(Component.translatable(key, ModHelpers.format(amount)).withStyle(attributeColor));
+                iconComponent.append(Component.translatable(key, amount).withStyle(attributeColor));
             } else if (!InlineTooltips.CONFIG.developerOptions.debugInfo) {
-                iconComponent.append(Component.literal("%s %s".formatted(ModHelpers.format(amount), WordUtils.capitalizeFully(attribute.getPath().replace("_", " ")))).withStyle(attributeColor));
+                iconComponent.append(Component.literal("%s %s".formatted(amount, WordUtils.capitalizeFully(attribute.getPath().replace("_", " ")))).withStyle(attributeColor));
             } else {
-                iconComponent.append(Component.literal("%s %s".formatted(ModHelpers.format(amount), key)).withStyle(attributeColor));
+                iconComponent.append(Component.literal("%s %s".formatted(amount, key)).withStyle(attributeColor));
             }
             list.add(iconComponent);
         } else {
-            iconComponent.append(ModHelpers.format(amount) + spacing);
+            iconComponent.append(amount + spacing);
             component.append(iconComponent);
         }
     }

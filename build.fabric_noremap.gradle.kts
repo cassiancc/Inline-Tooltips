@@ -146,7 +146,7 @@ publishMods {
 
     modrinth {
         projectId = property("publish.modrinth") as String
-        accessToken = null
+        accessToken = env.MODRINTH_API_KEY.orNull()
         if (!stonecutter.eval(mcVersion, ">1.21.10")) {
             minecraftVersions.add(stonecutter.current.version)
         } else {
@@ -169,8 +169,8 @@ publishMods {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "cc.cassian.item-descriptions"
-            artifactId = "item-descriptions-fabric"
+            groupId = "cc.cassian.inline_tooltips"
+            artifactId = "inline-tooltips-fabric"
             version = "${property("mod.version")}+${property("deps.minecraft")}"
 
             from(components["java"])

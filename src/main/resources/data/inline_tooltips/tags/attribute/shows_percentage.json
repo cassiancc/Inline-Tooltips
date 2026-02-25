@@ -1,5 +1,5 @@
 {
   "values": [
-    "minecraft:knockback_resistance"
+    { "id": "minecraft:knockback_resistance", "required": false }
   ]
 }

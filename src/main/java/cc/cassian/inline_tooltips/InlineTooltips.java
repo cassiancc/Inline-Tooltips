@@ -13,6 +13,7 @@ import com.samsthenerd.inline.utils.TextureSprite;
 *///?}
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -25,6 +26,9 @@ import net.minecraft.network.chat.contents.objects.AtlasSprite;
 *///?}
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.packs.resources.Resource;
+//? if >26
+/*import net.minecraft.world.clock.WorldClocks;*/
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.*;
@@ -38,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class InlineTooltips {
@@ -48,14 +53,14 @@ public class InlineTooltips {
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	private static final ResourceLocation UNDEFINED = id(MOD_ID, "textures/inline_tooltip_icons/empty.png");
+	private static final ResourceLocation UNDEFINED = id(MOD_ID, "inline_tooltip_icons/empty");
 
 
-    public static void addTooltips(ItemStack itemStack,
-                                   //? if >1.21
-                                   Item.TooltipContext tooltipContext,
-                                   TooltipFlag tooltipFlag, List<Component> list) {
+    public static void addTooltips(ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag, List<Component> list) {
         var player = Minecraft.getInstance().player;
+        ClientLevel level = Minecraft.getInstance().level;
+        if (player == null || level == null) return;
+        var inInventory = player.getInventory().contains(itemStack) || player.isCreative();
         // Add icon tooltips
         var component = Component.empty();
         // Attribute Modifiers
@@ -69,21 +74,18 @@ public class InlineTooltips {
         if (!component.equals(Component.empty()))
             list.add(component);
         // Add text tooltips
-        if (CONFIG.textTooltips.lodestoneTooltip && itemStack.has(DataComponents.LODESTONE_TRACKER)
-        ) {
+        if (CONFIG.textTooltips.lodestoneTooltip && itemStack.has(DataComponents.LODESTONE_TRACKER) && inInventory) {
             var state = itemStack.get(DataComponents.LODESTONE_TRACKER);
             if (state == null || state.target().isEmpty()) return;
             var pos = state.target().get();
             addCoordinates(pos, list, "target", ModHelpers.getColour(CONFIG.textTooltips.lodestoneCompassTooltipColor, ChatFormatting.GOLD));
         }
-        if (CONFIG.textTooltips.recoveryCompassTooltip && itemStack.is(Items.RECOVERY_COMPASS) && player != null) {
+        if (CONFIG.textTooltips.recoveryCompassTooltip && itemStack.is(Items.RECOVERY_COMPASS) && inInventory) {
             var lastDeath = player.getLastDeathLocation();
             if (lastDeath.isEmpty()) return;
             addCoordinates(lastDeath.get(), list, "target", ModHelpers.getColour(CONFIG.textTooltips.recoveryCompassTooltipColor, ChatFormatting.AQUA));
         }
-        if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !
-                itemStack.has(DataComponents.LODESTONE_TRACKER)
-                && player != null) {
+        if (CONFIG.textTooltips.compassTooltip && itemStack.is(Items.COMPASS) && !itemStack.has(DataComponents.LODESTONE_TRACKER) && inInventory) {
             var pos = player.blockPosition();
             addCoordinates(pos, list, "position", ModHelpers.getColour(CONFIG.textTooltips.compassTooltipColor, ChatFormatting.RED));
         }
@@ -91,8 +93,12 @@ public class InlineTooltips {
         ) {
             list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ModHelpers.getColour(CONFIG.durabilityTooltip.text_color, ChatFormatting.GRAY)));
         }
-        if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK) && player != null) {
-            list.add(Component.literal(getTime(Minecraft.getInstance().level.getDayTime())).withStyle(ModHelpers.getColour(CONFIG.clockTooltip.text_color, ChatFormatting.GOLD)));
+        if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK) && inInventory) {
+            //? if <26
+            float dayTime = level.getDayTime();
+            //? if >26
+            /*float dayTime = level.clockManager().getTotalTicks(level.registryAccess().getOrThrow(WorldClocks.OVERWORLD));*/
+            list.add(Component.literal(getTime(dayTime)).withStyle(ModHelpers.getColour(CONFIG.clockTooltip.text_color, ChatFormatting.GOLD)));
         }
     }
 
@@ -286,13 +292,24 @@ public class InlineTooltips {
             list.add(usedText.withStyle(ChatFormatting.GRAY));
         }
 
+
         //? if >1.21.8 {
         ResourceLocation icon = id(attribute.getNamespace(), "inline_tooltip_icons/"+ attribute.getPath());
-        MutableComponent iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, icon));
+        Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath())));
+        MutableComponent iconComponent;
+        if (resource.isPresent()) {
+			iconComponent = Component.object(new AtlasSprite(AtlasSprite.DEFAULT_ATLAS, icon));
+		} else {
+			iconComponent = Component.empty();
+		}
         //?} else {
         /*ResourceLocation icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "").replace("zombie.", "")));
-        var style = InlineStyle.fromInlineData(new SpriteInlineData(new TextureSprite(icon)));;
-        MutableComponent iconComponent = Component.empty().append(Component.literal(".").setStyle(style));
+        var style = InlineStyle.fromInlineData(new SpriteInlineData(new TextureSprite(icon)));
+        Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(icon);
+        MutableComponent iconComponent = Component.empty();
+        if (resource.isPresent()) {
+            iconComponent.append(Component.literal(".").setStyle(style));
+        }
         *///?}
 
         String spacing = new String(new char[CONFIG.general.spacing]).replace("\0", " ");
@@ -304,7 +321,10 @@ public class InlineTooltips {
             list.add(iconComponent);
         } else if (ModHelpers.hasShiftDown()) {
             iconComponent.append(expandedSpacing);
-            var key = attribute.toLanguageKey("tooltip");
+            var key = attribute.toLanguageKey("tooltip")
+                    //? if =1.21.1
+                    /*.replace("generic.", "").replace("zombie.", "")*/
+                    ;
             if (I18n.exists(key)) {
                 iconComponent.append(Component.translatable(key, amount).withStyle(attributeColor));
             } else if (!InlineTooltips.CONFIG.developerOptions.debugInfo) {
@@ -313,7 +333,7 @@ public class InlineTooltips {
                 iconComponent.append(Component.literal("%s %s".formatted(amount, key)).withStyle(attributeColor));
             }
             list.add(iconComponent);
-        } else {
+        } else if (resource.isPresent()) {
             iconComponent.append(amount + spacing);
             component.append(iconComponent);
         }
@@ -328,10 +348,6 @@ public class InlineTooltips {
     }
 
     public static ResourceLocation id(String namespace, String id) {
-        //? if >1.21 {
         return ResourceLocation.fromNamespaceAndPath(namespace, id);
-        //?} else {
-        /*return new ResourceLocation(namespace, id);
-        *///?}
     }
 }

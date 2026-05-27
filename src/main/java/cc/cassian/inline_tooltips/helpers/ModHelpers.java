@@ -3,7 +3,6 @@ package cc.cassian.inline_tooltips.helpers;
 import cc.cassian.inline_tooltips.InlineTooltips;
 import cc.cassian.inline_tooltips.compat.ModCompat;
 //? fabric {
-import cc.cassian.inline_tooltips.config.ModConfig;
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
 //?}
 import net.minecraft.ChatFormatting;
@@ -11,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -36,7 +36,7 @@ public class ModHelpers {
             //?} else {
                 /*attributeHolder.is(SHOWS_PERCENTAGE)
             *///?}
-            || (ModCompat.REARM && attributeHolder.value() == Attributes.KNOCKBACK_RESISTANCE)
+            || (ModCompat.REARM && attributeHolder == Attributes.KNOCKBACK_RESISTANCE)
         ) {
             return ModHelpers.format(amount * 100) + "%";
         }
@@ -65,21 +65,31 @@ public class ModHelpers {
      * Used to check what colour the text should be.
      * Adapted from Item Descriptions.
      */
-    public static ChatFormatting getColour(String colour, ChatFormatting fallback) {
+    public static int getColour(String colour, ChatFormatting fallback) {
         String replacedColour = colour.toLowerCase().replace(" ", "_");
+        final int gray = getByFormattingCode(ChatFormatting.GRAY);
+        final int fallbackInt = getByFormattingCode(fallback);
         return switch (replacedColour) {
             case "black", "dark_blue", "dark_green", "dark_red", "dark_purple",
                  "blue", "green", "aqua", "red", "yellow", "white" ->
-                    Objects.requireNonNullElse(ChatFormatting.getByName(colour), ChatFormatting.GRAY);
+                    Objects.requireNonNullElse(getByName(colour), gray);
             case "pink", "light_purple" ->
-                    Objects.requireNonNullElse(ChatFormatting.getByName("light_purple"), ChatFormatting.GRAY);
+                    Objects.requireNonNullElse(getByName("light_purple"), gray);
             case "dark_gray", "dark_grey" ->
-                    Objects.requireNonNullElse(ChatFormatting.getByName("dark_gray"), ChatFormatting.GRAY);
+                    Objects.requireNonNullElse(getByName("dark_gray"), gray);
             case "cyan", "dark_aqua" ->
-                    Objects.requireNonNullElse(ChatFormatting.getByName("dark_aqua"), ChatFormatting.GRAY);
+                    Objects.requireNonNullElse(getByName("dark_aqua"), gray);
             case "orange", "gold", "dark_yellow" ->
-                    Objects.requireNonNullElse(ChatFormatting.getByName("gold"), ChatFormatting.GRAY);
-            default -> fallback;
+                    Objects.requireNonNullElse(getByName("gold"), gray);
+            default -> fallbackInt;
         };
+    }
+
+    public static int getByFormattingCode(ChatFormatting friendlyName) {
+        return TextColor.fromLegacyFormat(friendlyName).getValue();
+    }
+
+    public static int getByName(String friendlyName) {
+        return TextColor.parseColor(friendlyName).getOrThrow().getValue();
     }
 }

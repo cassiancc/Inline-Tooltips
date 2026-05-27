@@ -17,18 +17,18 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-//? if >1.21.8 {
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.packs.resources.Resource;
+//? if >26 {
+import net.minecraft.world.clock.WorldClocks;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 //?} else {
 /*import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 *///?}
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.server.packs.resources.Resource;
-//? if >26
-/*import net.minecraft.world.clock.WorldClocks;*/
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.*;
@@ -53,7 +53,7 @@ public class InlineTooltips {
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	private static final ResourceLocation UNDEFINED = id(MOD_ID, "inline_tooltip_icons/empty");
+	private static final Identifier UNDEFINED = id(MOD_ID, "inline_tooltip_icons/empty");
 
 
     public static void addTooltips(ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag, List<Component> list) {
@@ -91,41 +91,41 @@ public class InlineTooltips {
         }
         if (CONFIG.durabilityTooltip.enable && !tooltipFlag.isAdvanced() && (CONFIG.durabilityTooltip.always_show || itemStack.isDamaged()) && itemStack.isDamageableItem() && (itemStack.has(DataComponents.DAMAGE) || CONFIG.durabilityTooltip.always_show)
         ) {
-            list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withStyle(ModHelpers.getColour(CONFIG.durabilityTooltip.text_color, ChatFormatting.GRAY)));
+            list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withColor(ModHelpers.getColour(CONFIG.durabilityTooltip.text_color, ChatFormatting.GRAY)));
         }
         if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK) && inInventory) {
             //? if <26
-            float dayTime = level.getDayTime();
+            //float dayTime = level.getDayTime();
             //? if >26
-            /*float dayTime = level.clockManager().getTotalTicks(level.registryAccess().getOrThrow(WorldClocks.OVERWORLD));*/
-            list.add(Component.literal(getTime(dayTime)).withStyle(ModHelpers.getColour(CONFIG.clockTooltip.text_color, ChatFormatting.GOLD)));
+            float dayTime = level.clockManager().getTotalTicks(level.registryAccess().getOrThrow(WorldClocks.OVERWORLD));
+            list.add(Component.literal(getTime(dayTime)).withColor(ModHelpers.getColour(CONFIG.clockTooltip.text_color, ChatFormatting.GOLD)));
         }
     }
 
-    private static void addCoordinates(GlobalPos globalPos, List<Component> list, String target, ChatFormatting colour) {
+    private static void addCoordinates(GlobalPos globalPos, List<Component> list, String target, int colour) {
         addCoordinates(globalPos.pos(), list, target, colour);
         list.add(
                 Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
                 Component.translatableWithFallback(globalPos.dimension()
                         //? if >1.21.10 {
-                        /*.identifier()
-                        *///?} else {
-                        .location()
-                        //?}
+                        .identifier()
+                        //?} else {
+                        /*.location()
+                        *///?}
                         .toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension()
                         //? if >1.21.10 {
-                        /*.identifier()
-                        *///?} else {
-                        .location()
-                        //?}
-                        .getPath())).withStyle(colour))
+                        .identifier()
+                        //?} else {
+                        /*.location()
+                        *///?}
+                        .getPath())).withColor(colour))
         );
     }
 
-    private static void addCoordinates(BlockPos pos, List<Component> list, String target, ChatFormatting colour) {
+    private static void addCoordinates(BlockPos pos, List<Component> list, String target, int colour) {
         list.add(
                 Component.translatable("gui.inline_tooltips."+target).withStyle(ChatFormatting.GRAY).append(
-                Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withStyle(colour))
+                Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withColor(colour))
         );
     }
 
@@ -183,10 +183,10 @@ public class InlineTooltips {
                         amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
                         var icon = holder.unwrapKey().orElseThrow()
                                 //? if >1.21.10 {
-                                /*.identifier()
-                                *///?} else {
-                                .location()
-                                //?}
+                                .identifier()
+                                //?} else {
+                                /*.location()
+                                *///?}
                                 ;
                         if (amount.get()!=0)
                             addIcon(icon, ModHelpers.format(amount.get(), holder), list, component, Component.translatable("item.modifiers."+equipmentSlotGroup.name().toLowerCase(Locale.ROOT)), ModHelpers.getColour(CONFIG.iconTooltips.attributeTooltipColor, ChatFormatting.DARK_GREEN));
@@ -282,11 +282,11 @@ public class InlineTooltips {
         }
     }
 
-    private static void addIcon(ResourceLocation attribute, double amount, List<Component> list, MutableComponent component, MutableComponent usedText, ChatFormatting attributeColor) {
+    private static void addIcon(Identifier attribute, double amount, List<Component> list, MutableComponent component, MutableComponent usedText, int attributeColor) {
         addIcon(attribute, ModHelpers.format(amount), list, component, usedText, attributeColor);
     }
 
-    private static void addIcon(ResourceLocation attribute, String amount, List<Component> list, MutableComponent component, MutableComponent usedText, ChatFormatting attributeColor) {
+    private static void addIcon(Identifier attribute, String amount, List<Component> list, MutableComponent component, MutableComponent usedText, int attributeColor) {
         if (ModHelpers.hasShiftDown() && usedText != null && !list.contains(usedText.withStyle(ChatFormatting.GRAY))) {
             list.add(Component.empty());
             list.add(usedText.withStyle(ChatFormatting.GRAY));
@@ -294,7 +294,7 @@ public class InlineTooltips {
 
 
         //? if >1.21.8 {
-        ResourceLocation icon = id(attribute.getNamespace(), "inline_tooltip_icons/"+ attribute.getPath());
+        Identifier icon = id(attribute.getNamespace(), "inline_tooltip_icons/"+ attribute.getPath());
         Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath())));
         MutableComponent iconComponent;
         if (resource.isPresent()) {
@@ -303,7 +303,7 @@ public class InlineTooltips {
 			iconComponent = Component.empty();
 		}
         //?} else {
-        /*ResourceLocation icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "").replace("zombie.", "")));
+        /*Identifier icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "").replace("zombie.", "")));
         var style = InlineStyle.fromInlineData(new SpriteInlineData(new TextureSprite(icon)));
         Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(icon);
         MutableComponent iconComponent = Component.empty();
@@ -323,14 +323,14 @@ public class InlineTooltips {
             iconComponent.append(expandedSpacing);
             var key = attribute.toLanguageKey("tooltip")
                     //? if =1.21.1
-                    /*.replace("generic.", "").replace("zombie.", "")*/
+                    //.replace("generic.", "").replace("zombie.", "")
                     ;
-            if (I18n.exists(key)) {
-                iconComponent.append(Component.translatable(key, amount).withStyle(attributeColor));
+            if (Language.getInstance().has(key)) {
+                iconComponent.append(Component.translatable(key, amount).withColor(attributeColor));
             } else if (!InlineTooltips.CONFIG.developerOptions.debugInfo) {
-                iconComponent.append(Component.literal("%s %s".formatted(amount, WordUtils.capitalizeFully(attribute.getPath().replace("_", " ")))).withStyle(attributeColor));
+                iconComponent.append(Component.literal("%s %s".formatted(amount, WordUtils.capitalizeFully(attribute.getPath().replace("_", " ")))).withColor(attributeColor));
             } else {
-                iconComponent.append(Component.literal("%s %s".formatted(amount, key)).withStyle(attributeColor));
+                iconComponent.append(Component.literal("%s %s".formatted(amount, key)).withColor(attributeColor));
             }
             list.add(iconComponent);
         } else if (resource.isPresent()) {
@@ -343,11 +343,11 @@ public class InlineTooltips {
 
     }
 
-    public static ResourceLocation id(String id) {
+    public static Identifier id(String id) {
         return id(MOD_ID, id);
     }
 
-    public static ResourceLocation id(String namespace, String id) {
-        return ResourceLocation.fromNamespaceAndPath(namespace, id);
+    public static Identifier id(String namespace, String id) {
+        return Identifier.fromNamespaceAndPath(namespace, id);
     }
 }

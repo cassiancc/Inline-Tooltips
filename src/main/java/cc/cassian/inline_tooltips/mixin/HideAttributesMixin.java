@@ -25,7 +25,7 @@ import static cc.cassian.inline_tooltips.InlineTooltips.CONFIG;
 @Mixin(ItemStack.class)
 public class HideAttributesMixin {
     //? if >26 {
-    /*@WrapOperation(at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;isTrue()Z"), method = "lambda$addAttributeTooltips$0")
+    @WrapOperation(at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;isTrue()Z"), method = "lambda$addAttributeTooltips$0")
     private static boolean init(MutableBoolean instance, Operation<Boolean> original, @Local Consumer<Component> consumer, @Local AttributeModifier attributeModifier) {
         // Disable default tooltip
         if (!CONFIG.iconTooltips.attributeTooltips) {
@@ -40,8 +40,8 @@ public class HideAttributesMixin {
             original.call(instance, consumer, player, attributeHolder, attributeModifier);
         }
     }
-    *///?} else if fabric {
-	@WrapOperation(at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;isTrue()Z"), method = "method_57370")
+    //?} else if fabric {
+	/*@WrapOperation(at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;isTrue()Z"), method = "method_57370")
 	private static boolean init(MutableBoolean instance, Operation<Boolean> original, @Local Consumer<Component> consumer, @Local AttributeModifier attributeModifier) {
         // Disable default tooltip
         if (!CONFIG.iconTooltips.attributeTooltips) {
@@ -59,17 +59,17 @@ public class HideAttributesMixin {
         }
     }
     //?} else {
-    /*@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;addModifierTooltip(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/Holder;Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;)V"), method = "method_57370")
+    /^@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;addModifierTooltip(Ljava/util/function/Consumer;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/Holder;Lnet/minecraft/world/entity/ai/attributes/AttributeModifier;)V"), method = "method_57370")
     private static void removeAttribute(ItemStack instance, Consumer consumer, Player player, Holder holder, AttributeModifier attributeModifier, Operation<Void> original) {
         // Enable our tooltip
         if (!CONFIG.iconTooltips.attributeTooltips) {
             original.call(instance, consumer, player, holder, attributeModifier);
         }
     }
-    *///?}
+    ^///?}
 
 
-    //?} else if neoforge && >1.21.8 {
+    *///?} else if neoforge && >1.21.8 {
     /*@WrapOperation(at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;isTrue()Z"), method = "lambda$addAttributeTooltips$19")
     private static boolean init(MutableBoolean instance, Operation<Boolean> original) {
         // Disable default tooltip

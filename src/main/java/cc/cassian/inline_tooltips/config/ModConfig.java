@@ -3,6 +3,7 @@ package cc.cassian.inline_tooltips.config;
 import folk.sisby.kaleido.api.WrappedConfig;
 import folk.sisby.kaleido.lib.quiltconfig.api.annotations.Comment;
 import folk.sisby.kaleido.lib.quiltconfig.api.annotations.DisplayName;
+import folk.sisby.kaleido.lib.quiltconfig.api.annotations.Matches;
 
 public class ModConfig extends WrappedConfig {
 
@@ -25,31 +26,39 @@ public class ModConfig extends WrappedConfig {
     public static class IconTooltips implements Section {
         @Comment("Add tooltips based on item attributes.")
         public boolean attributeTooltips = true;
-        public String attributeTooltipColor = "Dark Green";
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String attributeTooltipColour = "#aa0000";
         @Comment("Add tooltips based on fuel levels.")
         public boolean fuelTooltip = true;
-        public String fuelTooltipColor = "Gold";
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String fuelTooltipColour = "#ffaa00";
         @Comment("Add tooltips based on amount of bees.")
         public boolean beesTooltip = true;
-        public String beeTooltipColor = "Gold";
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String beeTooltipColour = "#ffaa00";
         @Comment("Add tooltips based on amount of honey.")
         public boolean honeyTooltip = true;
-        public String honeyTooltipColor = "Gold";
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String honeyTooltipColour = "#ffaa00";
         @Comment("Add tooltips based on light level.")
         public boolean lightLevelTooltip = true;
-        public String lightLevelTooltipColor = "Gold";
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String lightLevelTooltipColour = "#ffaa00";
         public boolean foodTooltip = true;
-        public String foodTooltipColor = "Gold";
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String foodTooltipColour = "#ffaa00";
         public boolean saturationTooltip = true;
-        public String saturationTooltipColor = "Gold";
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String saturationTooltipColour = "#ffaa00";
     }
 
     public DurabilityTooltip durabilityTooltip = new DurabilityTooltip();
     public static class DurabilityTooltip implements Section {
         @Comment("Add tooltips based on durability.")
         public boolean enable = true;
-        @Comment("Color of the durability tooltip.")
-        public String text_color = "Gray";
+        @Comment("Colour of the durability tooltip.")
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String text_colour = "#aaaaaa";
         @Comment("Always show durability tooltip.")
         public boolean always_show = false;
     }
@@ -59,15 +68,18 @@ public class ModConfig extends WrappedConfig {
         @Comment("Add tooltips to Compasses with the player's coordinates.")
         public boolean compassTooltip = true;
         @Comment("Compass tooltip colour.")
-        public String compassTooltipColor = "Red";
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String compassTooltipColour = "#ff5555";
         @Comment("Add tooltips based on Lodestone Compass's destination.")
         public boolean lodestoneTooltip = true;
         @Comment("Lodestone Compass tooltip colour.")
-        public String lodestoneCompassTooltipColor = "Gold";
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String lodestoneCompassTooltipColour = "#ffaa00";
         @Comment("Add tooltips based on Recovery Compass's destination.")
         public boolean recoveryCompassTooltip = true;
         @Comment("Recovery Compass tooltip colour.")
-        public String recoveryCompassTooltipColor = "Aqua";
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String recoveryCompassTooltipColour = "#55ffff";
     }
 
     public ClockTooltip clockTooltip = new ClockTooltip();
@@ -79,8 +91,9 @@ public class ModConfig extends WrappedConfig {
         public boolean day_count = true;
         @Comment("Whether to show the clock in a 24 hour format.")
         public boolean twenty_four_hour_clock = true;
-        @Comment("Text color of the clock tooltip.")
-        public String text_color = "Gold";
+        @Comment("Text colour of the clock tooltip.")
+        @Matches("#[0-9A-Fa-f]{6}")
+        public String text_colour = "#ffaa00";
     }
 
     public DeveloperOptions developerOptions = new DeveloperOptions();

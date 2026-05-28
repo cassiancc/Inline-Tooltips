@@ -5,6 +5,7 @@ import cc.cassian.inline_tooltips.compat.ModCompat;
 //? fabric {
 import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
 //?}
+import com.mojang.serialization.DataResult;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -66,30 +67,11 @@ public class ModHelpers {
      * Adapted from Item Descriptions.
      */
     public static int getColour(String colour, ChatFormatting fallback) {
-        String replacedColour = colour.toLowerCase().replace(" ", "_");
-        final int gray = getByFormattingCode(ChatFormatting.GRAY);
-        final int fallbackInt = getByFormattingCode(fallback);
-        return switch (replacedColour) {
-            case "black", "dark_blue", "dark_green", "dark_red", "dark_purple",
-                 "blue", "green", "aqua", "red", "yellow", "white" ->
-                    Objects.requireNonNullElse(getByName(colour), gray);
-            case "pink", "light_purple" ->
-                    Objects.requireNonNullElse(getByName("light_purple"), gray);
-            case "dark_gray", "dark_grey" ->
-                    Objects.requireNonNullElse(getByName("dark_gray"), gray);
-            case "cyan", "dark_aqua" ->
-                    Objects.requireNonNullElse(getByName("dark_aqua"), gray);
-            case "orange", "gold", "dark_yellow" ->
-                    Objects.requireNonNullElse(getByName("gold"), gray);
-            default -> fallbackInt;
-        };
-    }
+        DataResult<TextColor> parsedcolor = TextColor.parseColor(colour);
+        if (parsedcolor.isSuccess()) {
+            return parsedcolor.getOrThrow().getValue();
+        }
+        return Objects.requireNonNull(TextColor.fromLegacyFormat(fallback)).getValue();
 
-    public static int getByFormattingCode(ChatFormatting friendlyName) {
-        return TextColor.fromLegacyFormat(friendlyName).getValue();
-    }
-
-    public static int getByName(String friendlyName) {
-        return TextColor.parseColor(friendlyName).getOrThrow().getValue();
     }
 }

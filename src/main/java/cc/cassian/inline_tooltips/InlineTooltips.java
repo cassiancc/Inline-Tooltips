@@ -2,6 +2,7 @@ package cc.cassian.inline_tooltips;
 
 import cc.cassian.inline_tooltips.compat.ModCompat;
 import cc.cassian.inline_tooltips.config.ModConfig;
+import cc.cassian.inline_tooltips.helpers.FuelHelpers;
 import cc.cassian.inline_tooltips.helpers.ModHelpers;
 import cc.cassian.inline_tooltips.helpers.SharpnessHelpers;
 //? if =1.21.1 {
@@ -30,7 +31,6 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 *///?}
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightBlock;
@@ -42,6 +42,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static cc.cassian.inline_tooltips.helpers.FuelHelpers.getFuelValue;
+//~ if >26 'UseAnim.'->'ItemUseAnimation.' {
+import static net.minecraft.world.item.ItemUseAnimation.DRINK;
+//~}
 
 public class InlineTooltips {
 	public static final String MOD_ID = "inline_tooltips";
@@ -92,10 +97,12 @@ public class InlineTooltips {
             list.add(Component.translatable("item.durability", itemStack.getMaxDamage() - itemStack.getDamageValue(), itemStack.getMaxDamage()).withColor(ModHelpers.getColour(CONFIG.durabilityTooltip.text_colour, ChatFormatting.GRAY)));
         }
         if ((CONFIG.clockTooltip.current_time || CONFIG.clockTooltip.day_count) && itemStack.is(Items.CLOCK) && inInventory) {
-            //? if <26
-            //float dayTime = level.getDayTime();
-            //? if >26
+            //? if >26.2 {
+            /*float dayTime = level.clockManager().getInstance(level.registryAccess().getOrThrow(WorldClocks.OVERWORLD)).totalTicks();
+            *///?} else if >26 {
             float dayTime = level.clockManager().getTotalTicks(level.registryAccess().getOrThrow(WorldClocks.OVERWORLD));
+            //?} else
+            //float dayTime = level.getDayTime();
             list.add(Component.literal(getTime(dayTime)).withColor(ModHelpers.getColour(CONFIG.clockTooltip.text_colour, ChatFormatting.GOLD)));
         }
     }
@@ -209,14 +216,8 @@ public class InlineTooltips {
     private static void addFuelTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
         if (CONFIG.iconTooltips.fuelTooltip) {
             var level = Minecraft.getInstance().level;
-            if (level != null &&
-                    //? if >1.21.8 {
-                    level.fuelValues()
-                    //?} else {
-                    /*AbstractFurnaceBlockEntity
-                     *///?}
-                            .isFuel(itemStack)) {
-                addIcon(id("fuel"), getFuelValue(level, itemStack) /200f, list, component, Component.translatable("item.modifiers.furnace"), ModHelpers.getColour(CONFIG.iconTooltips.fuelTooltipColour, ChatFormatting.GOLD));
+            if (level != null && FuelHelpers.isFuel(itemStack, level)) {
+                addIcon(id("fuel"), getFuelValue(level, itemStack) / 200f, list, component, Component.translatable("item.modifiers.furnace"), ModHelpers.getColour(CONFIG.iconTooltips.fuelTooltipColour, ChatFormatting.GOLD));
             }
         }
     }
@@ -225,31 +226,19 @@ public class InlineTooltips {
         if (itemStack.has(DataComponents.FOOD) && (!ModCompat.APPLE_SKIN || CONFIG.developerOptions.showFoodTooltipWithAppleSkinInstalled) && CONFIG.iconTooltips.foodTooltip) {
             var foodProperties = itemStack.get(DataComponents.FOOD);
             if (foodProperties == null) return;
-            if (CONFIG.iconTooltips.foodTooltip)
-                addIcon(id("food"), foodProperties.nutrition(), list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.foodTooltipColour, ChatFormatting.GOLD));
-            if (CONFIG.iconTooltips.saturationTooltip)
-                addIcon(id("saturation"), foodProperties.saturation(), list, component, Component.translatable("item.modifiers.eaten"), ModHelpers.getColour(CONFIG.iconTooltips.saturationTooltipColour, ChatFormatting.GOLD));
-        }
-    }
-
-    private static double getFuelValue(Level level, ItemStack itemStack) {
-        //? if >1.21.8 && fabric {
-        int value = level.fuelValues().burnDuration(itemStack)
-        //?} else if fabric {
-        /*Integer value = AbstractFurnaceBlockEntity.getFuel().get(itemStack.getItem());
-        *///?} else {
-            /*int value = itemStack.getBurnTime(null
-            //? if >1.21.8
-            , level.fuelValues()
-            )
+            //? if >26 {
+            var consumableProperties = itemStack.get(DataComponents.CONSUMABLE);
+            if (consumableProperties == null) return;
+            boolean drink = consumableProperties.animation().equals(DRINK);
+            //?} else {
+            /*boolean drink = itemStack.getUseAnimation().equals(DRINK);
             *///?}
-        ;
-        //? if =1.21.1 && fabric {
-        /*if (value != null) {
-            return value;
-        } else return 0;
-        *///?} else
-        return value;
+            var eaten = drink ? Component.translatable("item.modifiers.drunk") : Component.translatable("item.modifiers.eaten");
+            if (CONFIG.iconTooltips.foodTooltip)
+                addIcon(id("food"), foodProperties.nutrition(), list, component, eaten, ModHelpers.getColour(CONFIG.iconTooltips.foodTooltipColour, ChatFormatting.GOLD));
+            if (CONFIG.iconTooltips.saturationTooltip)
+                addIcon(id("saturation"), foodProperties.saturation(), list, component, eaten, ModHelpers.getColour(CONFIG.iconTooltips.saturationTooltipColour, ChatFormatting.GOLD));
+        }
     }
 
     private static void addHoneyTooltips(ItemStack itemStack, List<Component> list, MutableComponent component) {
@@ -301,7 +290,7 @@ public class InlineTooltips {
 			iconComponent = Component.empty();
 		}
         //?} else {
-        /*Identifier icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "").replace("zombie.", "")));
+        /*Identifier icon = id(attribute.getNamespace(), "textures/inline_tooltip_icons/%s.png".formatted(attribute.getPath().replace("generic.", "").replace("zombie.", "").replace("player.", "")));
         var style = InlineStyle.fromInlineData(new SpriteInlineData(new TextureSprite(icon)));
         Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(icon);
         MutableComponent iconComponent = Component.empty();
@@ -321,7 +310,7 @@ public class InlineTooltips {
             iconComponent.append(expandedSpacing);
             var key = attribute.toLanguageKey("tooltip")
                     //? if =1.21.1
-                    //.replace("generic.", "").replace("zombie.", "")
+                    //.replace("generic.", "").replace("zombie.", "").replace("player.", "")
                     ;
             if (Language.getInstance().has(key)) {
                 iconComponent.append(Component.translatable(key, amount).withColor(attributeColor));

@@ -7,26 +7,30 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 //? if neoforge {
-/*import net.neoforged.neoforge.common.util.AttributeUtil;
+import net.neoforged.neoforge.common.util.AttributeUtil;
 //? if >1.21.8 {
 import net.neoforged.neoforge.event.GatherSkippedAttributeTooltipsEvent;
 //?} else {
-/^import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
-^///?}
+/*import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
 *///?}
+//?}
 import org.spongepowered.asm.mixin.Mixin;
 
 import static cc.cassian.inline_tooltips.InlineTooltips.CONFIG;
 
 //? if neoforge {
-/*@Mixin(AttributeUtil.class)
-*///?} else {
-@Mixin(ItemStack.class)
-//?}
+@Mixin(AttributeUtil.class)
+//?} else {
+/*@Mixin(ItemStack.class)
+*///?}
 public class NeoForgeHideAttributesMixin {
     //? if neoforge {
 
+    //? if >26 {
+    @WrapMethod(method = "lambda$applyModifierTooltips$0")
+    //?} else {
     /*@WrapMethod(method = "lambda$applyModifierTooltips$1")
+    *///?}
     private static boolean applyModifiers(GatherSkippedAttributeTooltipsEvent event, AttributeModifier m, Operation<Boolean> original) {
         // Disable default tooltip
         if (!CONFIG.iconTooltips.attributeTooltips) {
@@ -34,6 +38,6 @@ public class NeoForgeHideAttributesMixin {
         }
         return false;
     }
-    *///?}
+    //?}
 
 }

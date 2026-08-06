@@ -122,6 +122,10 @@ dependencies {
         modImplementation("maven.modrinth:inline:${property("deps.inline")}")
     }
 
+    if (hasProperty("deps.rrv")) {
+        modCompileOnly("maven.modrinth:rrv:${property("deps.rrv")}")
+    }
+
     implementation("folk.sisby:kaleido-config:${property("deps.kaleido")}")
     include("folk.sisby:kaleido-config:${property("deps.kaleido")}")
 }

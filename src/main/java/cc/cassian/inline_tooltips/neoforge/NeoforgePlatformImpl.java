@@ -1,7 +1,7 @@
 package cc.cassian.inline_tooltips.neoforge;
 
 //? neoforge {
-/*import cc.cassian.inline_tooltips.Platform;
+import cc.cassian.inline_tooltips.Platform;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 
@@ -25,4 +25,4 @@ public class NeoforgePlatformImpl implements Platform {
     }
 
 }
-*///?}
+//?}

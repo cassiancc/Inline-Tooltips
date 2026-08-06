@@ -47,6 +47,7 @@
   "tooltip.inline_tooltips.saturation": "Restores %s Saturation",
   "item.modifiers.placed": "When placed:",
   "item.modifiers.furnace": "When used in a Furnace:",
-  "item.modifiers.eaten": "When eaten:"
+  "item.modifiers.eaten": "When eaten:",
+  "item.modifiers.drunk": "When drunk:"
 
 }

@@ -27,7 +27,7 @@ public class ModConfig extends WrappedConfig {
         @Comment("Add tooltips based on item attributes.")
         public boolean attributeTooltips = true;
         @Matches("#[0-9A-Fa-f]{6}")
-        public String attributeTooltipColour = "#aa0000";
+        public String attributeTooltipColour = "#12aa00";
         @Comment("Add tooltips based on fuel levels.")
         public boolean fuelTooltip = true;
         @Matches("#[0-9A-Fa-f]{6}")

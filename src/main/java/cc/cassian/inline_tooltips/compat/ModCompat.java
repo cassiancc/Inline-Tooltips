@@ -5,4 +5,5 @@ import cc.cassian.inline_tooltips.Platform;
 public class ModCompat {
     public static final boolean APPLE_SKIN = Platform.INSTANCE.isModLoaded("appleskin");
     public static final boolean REARM = Platform.INSTANCE.isModLoaded("rearm");
+    public static final boolean RELIABLE_RECIPE_VIEWER = Platform.INSTANCE.isModLoaded("rrv");
 }

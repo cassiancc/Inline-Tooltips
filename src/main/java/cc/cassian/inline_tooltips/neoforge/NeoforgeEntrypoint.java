@@ -1,7 +1,7 @@
 package cc.cassian.inline_tooltips.neoforge;
 
 //? neoforge {
-/*import cc.cassian.inline_tooltips.InlineTooltips;
+import cc.cassian.inline_tooltips.InlineTooltips;
 import cc.cassian.inline_tooltips.helpers.ModHelpers;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -11,8 +11,8 @@ import net.neoforged.fml.common.Mod;
 //? if >1.21.8 {
 import net.neoforged.neoforge.event.GatherSkippedAttributeTooltipsEvent;
 //?} else {
-/^import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
-^///?}
+/*import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
+*///?}
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import static cc.cassian.inline_tooltips.InlineTooltips.CONFIG;
@@ -38,4 +38,4 @@ public class NeoforgeEntrypoint {
     }
 
 }
-*///?}
+//?}

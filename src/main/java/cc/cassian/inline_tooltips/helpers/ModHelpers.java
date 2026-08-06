@@ -3,8 +3,8 @@ package cc.cassian.inline_tooltips.helpers;
 import cc.cassian.inline_tooltips.InlineTooltips;
 import cc.cassian.inline_tooltips.compat.ModCompat;
 //? fabric {
-import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
-//?}
+/*import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
+*///?}
 import com.mojang.serialization.DataResult;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -33,10 +33,10 @@ public class ModHelpers {
         if (!CONFIG.general.checkPercentageTag) return ModHelpers.format(amount);
         if (
             //? if fabric {
-                ClientTags.isInWithLocalFallback(SHOWS_PERCENTAGE, attributeHolder)
-            //?} else {
-                /*attributeHolder.is(SHOWS_PERCENTAGE)
-            *///?}
+                /*ClientTags.isInWithLocalFallback(SHOWS_PERCENTAGE, attributeHolder)
+            *///?} else {
+                attributeHolder.is(SHOWS_PERCENTAGE)
+            //?}
             || (ModCompat.REARM && attributeHolder == Attributes.KNOCKBACK_RESISTANCE)
         ) {
             return ModHelpers.format(amount * 100) + "%";

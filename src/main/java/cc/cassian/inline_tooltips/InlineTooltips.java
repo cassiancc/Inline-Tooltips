@@ -16,25 +16,27 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.tags.TagKey;
 //? if >26 {
 import net.minecraft.world.clock.WorldClocks;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 //?} else {
-/*import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-*///?}
+//?}
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightBlock;
 import org.apache.commons.lang3.text.WordUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +53,9 @@ import static net.minecraft.world.item.ItemUseAnimation.DRINK;
 public class InlineTooltips {
 	public static final String MOD_ID = "inline_tooltips";
     public static final ModConfig CONFIG = ModConfig.createToml(Platform.INSTANCE.getConfigDir(),"", MOD_ID, ModConfig.class);
+    public static final TagKey<Item> DRINKS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "drinks"));
 
-	// This logger is used to write text to the console and the log file.
+    // This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -112,25 +115,15 @@ public class InlineTooltips {
         list.add(
                 Component.translatable("gui.inline_tooltips.dimension").withStyle(ChatFormatting.GRAY).append(
                 Component.translatableWithFallback(globalPos.dimension()
-                        //? if >26 {
-                        .identifier()
-                        //?} else {
-                        /*.location()
-                        *///?}
-                        .toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension()
-                        //? if >26 {
-                        .identifier()
-                        //?} else {
-                        /*.location()
-                        *///?}
-                        .getPath())).withColor(colour))
+                        //~ if >26 'location'->'identifier'
+                        .identifier().toLanguageKey("dimension"), WordUtils.capitalizeFully(globalPos.dimension().identifier().getPath())).withColor(colour))
         );
     }
 
     private static void addCoordinates(BlockPos pos, List<Component> list, String target, int colour) {
         list.add(
                 Component.translatable("gui.inline_tooltips."+target).withStyle(ChatFormatting.GRAY).append(
-                Component.literal("X: %d, Y: %d, Z: %d".formatted(pos.getX(), pos.getY(), pos.getZ())).withColor(colour))
+                Component.translatable("gui.inline_tooltips.xyz", pos.getX(), pos.getY(), pos.getZ()).withColor(colour))
         );
     }
 
@@ -186,13 +179,8 @@ public class InlineTooltips {
                             });
                         }
                         amount.set(SharpnessHelpers.addSharpnessDamage(itemStack, amount.get(), player, attributeModifier));
-                        var icon = holder.unwrapKey().orElseThrow()
-                                //? if >26 {
-                                .identifier()
-                                //?} else {
-                                /*.location()
-                                *///?}
-                                ;
+                        //~ if >26 'location'->'identifier'
+                        var icon = holder.unwrapKey().orElseThrow().identifier();
                         if (amount.get()!=0)
                             addIcon(icon, ModHelpers.format(amount.get(), holder), list, component, Component.translatable("item.modifiers."+equipmentSlotGroup.name().toLowerCase(Locale.ROOT)), ModHelpers.getColour(CONFIG.iconTooltips.attributeTooltipColour, ChatFormatting.DARK_GREEN));
                     //? if >26
@@ -217,7 +205,7 @@ public class InlineTooltips {
         if (CONFIG.iconTooltips.fuelTooltip) {
             var level = Minecraft.getInstance().level;
             if (level != null && FuelHelpers.isFuel(itemStack, level)) {
-                addIcon(id("fuel"), getFuelValue(level, itemStack) / 200f, list, component, Component.translatable("item.modifiers.furnace"), ModHelpers.getColour(CONFIG.iconTooltips.fuelTooltipColour, ChatFormatting.GOLD));
+                addIcon(id("fuel"), getFuelValue(itemStack, level) / 200f, list, component, Component.translatable("item.modifiers.furnace"), ModHelpers.getColour(CONFIG.iconTooltips.fuelTooltipColour, ChatFormatting.GOLD));
             }
         }
     }
@@ -233,10 +221,11 @@ public class InlineTooltips {
             //?} else {
             /*boolean drink = itemStack.getUseAnimation().equals(DRINK);
             *///?}
+            drink = drink || itemStack.is(DRINKS);
             var eaten = drink ? Component.translatable("item.modifiers.drunk") : Component.translatable("item.modifiers.eaten");
-            if (CONFIG.iconTooltips.foodTooltip)
+            if (CONFIG.iconTooltips.foodTooltip && foodProperties.nutrition()>0)
                 addIcon(id("food"), foodProperties.nutrition(), list, component, eaten, ModHelpers.getColour(CONFIG.iconTooltips.foodTooltipColour, ChatFormatting.GOLD));
-            if (CONFIG.iconTooltips.saturationTooltip)
+            if (CONFIG.iconTooltips.saturationTooltip && foodProperties.saturation()>0)
                 addIcon(id("saturation"), foodProperties.saturation(), list, component, eaten, ModHelpers.getColour(CONFIG.iconTooltips.saturationTooltipColour, ChatFormatting.GOLD));
         }
     }
@@ -269,11 +258,11 @@ public class InlineTooltips {
         }
     }
 
-    private static void addIcon(Identifier attribute, double amount, List<Component> list, MutableComponent component, MutableComponent usedText, int attributeColor) {
+    private static void addIcon(Identifier attribute, double amount, List<Component> list, MutableComponent component, @Nullable MutableComponent usedText, int attributeColor) {
         addIcon(attribute, ModHelpers.format(amount), list, component, usedText, attributeColor);
     }
 
-    private static void addIcon(Identifier attribute, String amount, List<Component> list, MutableComponent component, MutableComponent usedText, int attributeColor) {
+    private static void addIcon(Identifier attribute, String amount, List<Component> list, MutableComponent component, @Nullable MutableComponent usedText, int attributeColor) {
         if (ModHelpers.hasShiftDown() && usedText != null && !list.contains(usedText.withStyle(ChatFormatting.GRAY))) {
             list.add(Component.empty());
             list.add(usedText.withStyle(ChatFormatting.GRAY));

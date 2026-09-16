@@ -22,11 +22,11 @@ public class FuelHelpers {
 		*///?} else if >1.21.8 {
 		return level.fuelValues().isFuel(itemStack);
 		//?} else {
-		/*return getFuelValue(level, itemStack)>0;
+		/*return getFuelValue(itemStack, level)>0;
 		 *///?}
 	}
 
-	public static double getFuelValue(Level level, ItemStack itemStack) {
+	public static double getFuelValue(ItemStack itemStack, Level level) {
 		int value = 0;
 		//? if >26.2 {
 		/*if (ModCompat.RELIABLE_RECIPE_VIEWER) {
@@ -35,7 +35,7 @@ public class FuelHelpers {
 		*///?} else if >1.21.8 && fabric {
 		value = level.fuelValues().burnDuration(itemStack);
 		 //?} else if fabric {
-		/*value = AbstractFurnaceBlockEntity.getFuel().get(itemStack.getItem());
+		/*value = AbstractFurnaceBlockEntity.getFuel().getOrDefault(itemStack.getItem(), value);
 		 *///?} else {
             /*value = EventHooks.getItemBurnTime(itemStack, itemStack.getItem().getBurnTime(itemStack, null
 					//? if >1.21.8

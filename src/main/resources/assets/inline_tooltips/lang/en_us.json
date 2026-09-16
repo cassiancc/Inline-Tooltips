@@ -2,6 +2,7 @@
   "gui.inline_tooltips.target": "Target: ",
   "gui.inline_tooltips.dimension": "Dimension: ",
   "gui.inline_tooltips.position": "Position: ",
+  "gui.inline_tooltips.xyz": "X: %s, Y: %s, Z: %s",
   "gui.c.day": "Day %s",
   "tooltip.inline_tooltips.fuel": "%s Fuel",
   "tooltip.inline_tooltips.light": "%s Light Level",

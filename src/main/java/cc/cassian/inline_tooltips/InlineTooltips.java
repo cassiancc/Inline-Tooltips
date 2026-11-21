@@ -121,9 +121,18 @@ public class InlineTooltips {
     }
 
     private static void addCoordinates(BlockPos pos, List<Component> list, String target, int colour) {
+        MutableComponent coordinates = Component.translatable("gui.inline_tooltips.x", pos.getX());
+        if (CONFIG.textTooltips.compassTooltipY) {
+            coordinates
+                    .append(", ")
+                    .append(Component.translatable("gui.inline_tooltips.y", pos.getY()));
+        }
+        coordinates
+                .append(", ")
+                .append(Component.translatable("gui.inline_tooltips.z", pos.getZ()));
         list.add(
-                Component.translatable("gui.inline_tooltips."+target).withStyle(ChatFormatting.GRAY).append(
-                Component.translatable("gui.inline_tooltips.xyz", pos.getX(), pos.getY(), pos.getZ()).withColor(colour))
+                Component.translatable("gui.inline_tooltips." + target).withStyle(ChatFormatting.GRAY)
+                        .append(coordinates).withColor(colour)
         );
     }
 

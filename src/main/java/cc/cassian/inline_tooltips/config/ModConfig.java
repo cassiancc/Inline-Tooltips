@@ -67,6 +67,8 @@ public class ModConfig extends WrappedConfig {
     public static class TextTooltips implements Section {
         @Comment("Add tooltips to Compasses with the player's coordinates.")
         public boolean compassTooltip = true;
+        @Comment("Compass includes Y coordinates.")
+        public boolean compassTooltipY = true;
         @Comment("Compass tooltip colour.")
         @Matches("#[0-9A-Fa-f]{6}")
         public String compassTooltipColour = "#ff5555";
